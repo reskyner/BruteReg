@@ -29,7 +29,14 @@ Optional: ks - array of k-values (number of features to be selected
             	9: Lasso lars with information criterion (IC) - AIC/BIC
              	10: Elastic net regression
             	11: Elastic net with CV
-            	12: Linear support vector regression"""
+            	12: Linear support vector regression
+            	
+Development: Currently only a default set of hyper-parameters are enabled...
+
+                To change these, edit them in the set_parameters() function in
+                pipemodules.py.
+
+                We reccomend you create a backup of the original file!"""
 
     ## Preprocess data
     all_data = pm.preprocess()
@@ -61,6 +68,7 @@ Optional: ks - array of k-values (number of features to be selected
                     method_id = str([j,k,i])
                     grid_search = pm.search_random_forest()
                     grid_search.set_method(i)
+                    
                     grid_search.set_parameters()
 
                     # run current method
