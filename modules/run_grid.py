@@ -78,7 +78,7 @@ Development: Currently only a default set of hyper-parameters are enabled...
                     try:
                         all_data.results = pd.concat([all_data.results, pd.DataFrame(temp_results)])
                         #print str(j) + ' ' + str(k) + ' ' + str(i)
-			print all_data.results
+			#print all_data.results
                     except:
 			all_data.results = []
                         all_data.results = pd.DataFrame(temp_results)

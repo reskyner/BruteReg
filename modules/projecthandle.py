@@ -3,7 +3,27 @@
 
 import pickle
 import os.path
+import pandas as pd
 import projecthandle as proj
+
+def set_input(filename):
+    """set_input('filename') 
+    
+    Import a csv file of the format:
+    1. first row - should be names of labels, property, then n descriptors:
+       labels, y, X1-name....Xn-name
+    
+    2. following rows - values corresponding to column headers:
+       label1, y1, X1.....Xn"""
+    
+    descriptors_raw = pd.read_csv(filename)
+    labels = descriptors_raw.iloc[:,0]
+    X = descriptors_raw.iloc[:,2:]
+    y = descriptors_raw.iloc[:,1]
+
+    del descriptors_raw
+    return X, y, labels
+
 
 def save_eval(filename, all_data):
     devobj = proj.input_object()
