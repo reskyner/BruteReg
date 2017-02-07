@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # coding=utf8
 
-#import sys
-#sys.path.append('/usr/local/lib/python2.7/site-packages')
+import sys
+sys.path.append('/usr/local/lib/python2.7/site-packages')
 
 import pandas as pd
 from sklearn import feature_selection
@@ -15,7 +15,7 @@ import sklearn.metrics as metrics
 from sklearn import linear_model
 from sklearn import ensemble
 from sklearn import svm
-import matplotlib.pyplot as plt
+
 import random
 
 class preprocess(object):
@@ -308,7 +308,7 @@ def get_X(X, indicies):
         if state == 0:
             X_out = pd.DataFrame(X.iloc[:,a])
             state += 1
- 	if state > 0:
+        else:
             temp = X.iloc[:,a]
             X_out = pd.concat([X_out, temp], axis=1)
 

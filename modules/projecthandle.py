@@ -4,7 +4,7 @@
 import pickle
 import os.path
 import pandas as pd
-import projecthandle as proj
+
 
 def set_input(filename):
     """set_input('filename') 
@@ -56,8 +56,8 @@ def check_contents(filename):
                     count += 1
                     #if count == 4:
                         #print 'This file contains only an evaluation set'
-                    if count == 5:
-                        print 'This file contains an evaluation and analysis set'
+                    #if count == 5:
+                        #print 'This file contains an evaluation and analysis set'
                 except:
                     val = False       
         f.close()
@@ -78,19 +78,19 @@ class file_loader(object):
                 self.dev_set = pickle.load(f)
                 self.eval_set = pickle.load(f)
                 self.meth = pickle.load(f)
-                print 'hi'
+                
                 return f
             if load_number == 4:
                 f = eval_load()
                 f.close()
             if load_number == 5:
-                print 'hi'
+                
                 f = eval_load()
                 self.analysis_results = pickle.load(f)
                 f.close()
         except:
             raise IOError("Can't load file... check filetype and contents...")
-
+        return self
 
 class project(object):
     
