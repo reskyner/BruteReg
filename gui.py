@@ -16,12 +16,103 @@ import pandas as pd
 import re
 import pipemodules as pm
 
+from sklearn import metrics
+
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 
 import csv
+
+def quality_filter(results, min_train_score=0.75, max_diff=0.15):
+
+    results.reset_index(drop=True, inplace=True)
+
+    ## filter results and eliminate poor models
+    for i in range(0,len(results)):
+        if results.mean_train_score[i] > float(min_train_score) \
+        and abs(results.mean_test_score[i] - results.mean_train_score[i]) < float(max_diff):
+            continue
+        else: 
+            results.drop(i, axis=0, inplace=True)
+
+    results.reset_index(drop=True, inplace=True)
+    return results
+
+def fit_method(self,ind,results):
+   ## create analysis set
+   # set arrays for results
+   dev_set_score = []
+   eval_set_score = []
+   dev_evs = []
+   eval_evs = []
+   dev_mae = []
+   eval_mae = []
+   dev_mse = []
+   eval_mse = []
+   dev_medae = []
+   eval_medae = []
+   method_ids = []
+   parameters = []
+
+   for i in ind:     
+      string = results.method_ids[i] # retrive method id
+      setup = eval(string) # convert to iterable array
+
+      temp = pm.search_random_forest() #initiate class
+
+      # set the estimator type and initiate estimator class
+      _,self.clf,_ = temp.set_method(setup[2]) 
+
+      # get the development set features
+      X_dev_temp, _ = pm.get_X(self.project.dev_set.matrix_raw, \
+                              self.project.meth.indvals[setup[0]][setup[1]]) 
+      # get the evaluation set features
+      X_eval_temp, _ = pm.get_X(self.project.eval_set.matrix_raw, \
+                               self.project.meth.indvals[setup[0]][setup[1]]) 
+
+      del temp
+
+      # retreive hyper-parameters
+      try:
+         params = results['params'][i]
+      except:
+         params = results['parameters'][i]
+      # set estimator hyper-parameters
+      self.clf.set_params(**params)
+
+      # fit the estimator to the development set
+      self.clf.fit(X_dev_temp, self.project.dev_set.y_raw)
+      # predict the evaluation set
+      eval_predict=[]
+      eval_predict = self.clf.predict(X_eval_temp)
+      # predict the development set - for metrics
+      dev_predict=[]
+      dev_predict = self.clf.predict(X_dev_temp)
+
+      dev_set_score.append(self.clf.score(X_dev_temp, self.project.dev_set.y_raw))
+      eval_set_score.append(self.clf.score(X_eval_temp, self.project.eval_set.y_raw))
+      dev_evs.append(metrics.explained_variance_score(dev_predict, self.project.dev_set.y_raw))
+      eval_evs.append(metrics.explained_variance_score(eval_predict, self.project.eval_set.y_raw))
+      dev_mae.append(metrics.mean_absolute_error(dev_predict, self.project.dev_set.y_raw))
+      eval_mae.append(metrics.mean_absolute_error(eval_predict, self.project.eval_set.y_raw))
+      dev_mse.append(metrics.mean_squared_error(dev_predict, self.project.dev_set.y_raw))
+      eval_mse.append(metrics.mean_squared_error(eval_predict, self.project.eval_set.y_raw))
+      dev_medae.append(metrics.median_absolute_error(dev_predict, self.project.dev_set.y_raw))
+      eval_medae.append(metrics.median_absolute_error(eval_predict, self.project.eval_set.y_raw))
+      method_ids.append(string)
+      parameters.append(params)
+
+   # create dictionary object from results
+   evaluation_results = {'dev_set_score':dev_set_score, 'eval_set_score':eval_set_score, \
+                      'method_ids':method_ids, 'parameters':parameters, 'dev_evs':dev_evs, \
+                      'eval_evs':eval_evs, 'dev_mae':dev_mae, 'eval_mae':eval_mae, \
+                      'dev_mse': dev_mse, 'eval_mse':eval_mse, 'dev_median_ae':dev_medae, \
+                      'eval_median_ae':eval_medae}
+   evaluation_results=pd.DataFrame.from_dict(evaluation_results)
+
+   return eval_predict, dev_predict, evaluation_results
 
 class NotebookDemo(ttk.Frame):
    
@@ -36,9 +127,34 @@ class NotebookDemo(ttk.Frame):
       self.fname = askopenfilename()
       if self.fname:
          self.fileloader = proj.file_loader()
-         self.project = self.fileloader.load_file(self.fname)
+         self.project, number = self.fileloader.load_file(self.fname)
          self.populate_tree()
-      return self
+         if number<5:
+            self.toplevel=Toplevel()
+
+            message = 'This project only contains raw grid search results.\n\
+Create an analysis set by filtering out poor results.\n\n\
+min_train score: minimum average score of the training set\n\
+max_diff: maximum difference between mean train and test scores\n'
+                       
+
+            self.toplevel.message = Label(self.toplevel, text=message, wraplength=3000)
+            self.toplevel.message.grid(row=0)
+            self.toplevel.second_frame=Frame(self.toplevel)
+            self.toplevel.second_frame.grid(row=1)
+
+            self.toplevel.button2=Button(self.toplevel.second_frame, text="Quality Filter", command=self.qfilter_button)
+            self.toplevel.button2.grid(row=1,column=4)
+            self.toplevel.mintscore = Entry(self.toplevel.second_frame,width=5)
+            self.toplevel.mintscore.grid(row=1,column=1)
+            self.toplevel.label2=Label(self.toplevel.second_frame, text='min_train_score')
+            self.toplevel.label2.grid(row=1,column=0)
+            self.toplevel.mindiff = Entry(self.toplevel.second_frame, width=5)
+            self.toplevel.mindiff.grid(row=1,column=3)
+            self.toplevel.label3=Label(self.toplevel.second_frame, text='max_diff')
+            self.toplevel.label3.grid(row=1,column=2)
+             
+      
 
    def populate_tree(self):
       underscores=re.compile('\__')
@@ -74,10 +190,13 @@ class NotebookDemo(ttk.Frame):
 
       ## Menu
       menubar = Menu(self.master)
-   
+      def del_project():
+          del self.project
       menu_file = Menu(menubar)
       menubar.add_cascade(menu=menu_file, label='Project')
-      menu_file.add_command(label='Load Project', command=self.load_file)
+      menu_file.add_command(label='Open Project', command=self.load_file)
+      menu_file.add_command(label='Clear Project', command=self.__init__)
+   
       self.master['menu']=menubar
       ## Add tabs
       self.create_view_tab(nb)
@@ -95,13 +214,14 @@ class NotebookDemo(ttk.Frame):
       self.button_frame = Frame(self.frame)
       self.create_method_frame = Frame(self.frame)
       self.create_method_frame.grid(row=1,column=1,sticky=N+E)
-      self.create_method_frame.label1=Label(self.create_method_frame, text='Index (from first column)')
-      self.create_method_frame.label1.grid(row=0,column=0)
+      self.create_method_frame.label1=Label(self.create_method_frame, text='Index')
+      self.create_method_frame.label1.grid(row=0,column=2)
       self.create_method_frame.method_entry = Entry(self.create_method_frame)
-      self.create_method_frame.method_entry.grid(row=0,column=1)
-      self.create_method_frame.button=Button(self.create_method_frame, text="Set method", command=self.set_method)
-      self.create_method_frame.button.grid(row=0,column=2)
-            
+      self.create_method_frame.method_entry.grid(row=0,column=3)
+      self.create_method_frame.button=Button(self.create_method_frame, text="Plot method", command=self.set_method)
+      self.create_method_frame.button.grid(row=0,column=4)
+
+      
       self.frame.button2 = Button(self.button_frame, text='Display', command=self.table_load, width=15)
       self.frame.button2.grid(row=0, column=0, sticky=N+E+W+S)
       
@@ -150,43 +270,31 @@ class NotebookDemo(ttk.Frame):
       model.importDict(dictionary)
       self.table.redrawTable()
 
+   def qfilter_button(self):
+      
+      min_train_score = self.toplevel.mintscore.get()
+      max_diff = self.toplevel.mindiff.get()
+      curItem = self.frame.tree.focus()
+      results = eval('self.project.eval_results')
+      filtered = quality_filter(results,min_train_score,max_diff)
+      print filtered
+      _,_,self.project.temp_results = fit_method(self,range(0,len(filtered)),filtered)
+
+      #fil_tree = self.frame.tree.insert('','end','',text='Filter Results')
+      #self.frame.tree.insert('results', 'end', 'temp_results', text='analysis_set')
+
+      proj.save_analysis(self.project.temp_results,self.fname)
+      self.__init__()
+      self.toplevel.destroy()
+
+
    def set_method(self):
       ind = [int(self.create_method_frame.method_entry.get())]
       
       curItem = self.frame.tree.focus()
       results = eval('self.project.'+curItem)
-      for i in ind:     
-         string = results.method_ids[i] # retrive method id
-         setup = eval(string) # convert to iterable array
 
-         temp = pm.search_random_forest() #initiate class
-
-         # set the estimator type and initiate estimator class
-         _,self.clf,_ = temp.set_method(setup[2]) 
-
-         # get the development set features
-         X_dev_temp, _ = pm.get_X(self.project.dev_set.matrix_raw, \
-                                 self.project.meth.indvals[setup[0]][setup[1]]) 
-         # get the evaluation set features
-         X_eval_temp, _ = pm.get_X(self.project.eval_set.matrix_raw, \
-                                  self.project.meth.indvals[setup[0]][setup[1]]) 
-
-         del temp
-
-         # retreive hyper-parameters
-         try:
-            params = results['params'][i]
-         except:
-            params = results['parameters'][i]
-         # set estimator hyper-parameters
-         self.clf.set_params(**params)
-
-         # fit the estimator to the development set
-         self.clf.fit(X_dev_temp, self.project.dev_set.y_raw)
-         # predict the evaluation set
-         eval_predict = self.clf.predict(X_eval_temp)
-         # predict the development set - for metrics
-         dev_predict = self.clf.predict(X_dev_temp)
+      eval_predict,dev_predict,_=fit_method(self,ind,results)
 
       self.f.clear()
       self.f = Figure(figsize=(2,1), dpi=100)
@@ -202,10 +310,7 @@ class NotebookDemo(ttk.Frame):
       self.a.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=1, ncol=1,  borderaxespad=0., fontsize=7)
       
       self.canvas.draw()
-      
 
-      print eval_predict
-      return self.clf
 
 
 if __name__ == "__main__":

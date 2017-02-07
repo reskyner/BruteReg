@@ -37,7 +37,7 @@ def save_eval(filename, all_data):
     
 def save_analysis(analysis_results, filename):
     check = file_loader()
-    verify = check.check_contents(filename)
+    verify = check_contents(filename)
     if verify == 4:
         with open(filename, 'ab') as f:
             pickle.dump(analysis_results, f)
@@ -90,7 +90,7 @@ class file_loader(object):
                 f.close()
         except:
             raise IOError("Can't load file... check filetype and contents...")
-        return self
+        return self, load_number
 
 class project(object):
     
