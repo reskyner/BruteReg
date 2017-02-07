@@ -15,6 +15,7 @@ from tkintertable.Tables_IO import TableImporter
 import pandas as pd
 import re
 import pipemodules as pm
+import run_grid as rg
 
 from sklearn import metrics
 
@@ -73,7 +74,7 @@ def fit_method(self,ind,results):
                                self.project.meth.indvals[setup[0]][setup[1]]) 
 
       del temp
-
+      
       # retreive hyper-parameters
       try:
          params = results['params'][i]
@@ -81,6 +82,8 @@ def fit_method(self,ind,results):
          params = results['parameters'][i]
       # set estimator hyper-parameters
       self.clf.set_params(**params)
+      
+      self.output_frame.output.insert(END,str(str(self.clf)+'\n'))
 
       # fit the estimator to the development set
       self.clf.fit(X_dev_temp, self.project.dev_set.y_raw)
@@ -180,6 +183,18 @@ max_diff: maximum difference between mean train and test scores\n'
    def _create_widgets(self): 
       self.main_frame()
 
+   def new_project(self):
+       self.csvname = askopenfilename()
+       X,y,labels = proj.set_input(self.csvname)
+       self.toplevel=Toplevel()
+
+       self.toplevel.label=Label(self.toplevel,text='Options:')
+       self.toplevel.label.grid(row=0,column=0,sticky=S+W)
+
+       self.toplevel.method_pane=Frame(master=self.toplevel)
+       self.toplevel.method_pane.pack()
+       self.toplevel.method_pane.label1=Label(self.toplevel.method_pane, test='K-Values')
+       self.toplevel.method_pane.pack()
    def main_frame(self):
       mainPanel = Frame(self,name='main')
       mainPanel.pack(side=TOP, fill=BOTH, expand=Y)
@@ -190,10 +205,13 @@ max_diff: maximum difference between mean train and test scores\n'
 
       ## Menu
       menubar = Menu(self.master)
-      def del_project():
-          del self.project
+
       menu_file = Menu(menubar)
+      submenu = Menu(menubar)
+      submenu.add_command(label='From .csv', command=self.new_project)
       menubar.add_cascade(menu=menu_file, label='Project')
+      menu_file.add_cascade(menu=submenu,label='New Project')
+      
       menu_file.add_command(label='Open Project', command=self.load_file)
       menu_file.add_command(label='Clear Project', command=self.__init__)
    
@@ -211,6 +229,19 @@ max_diff: maximum difference between mean train and test scores\n'
       self.frame.tree = ttk.Treeview(self.frame)
       self.frame.tree.grid(row=0, column=0, sticky=N+S+E+W)
 
+      self.output_frame = Frame(self.frame)
+      self.output_frame.grid(row=3,column=0,sticky=N+S+E)
+      self.output_frame.scroll=Scrollbar(self.output_frame)
+      self.output_frame.scroll2=Scrollbar(self.output_frame, orient=HORIZONTAL)
+      self.output_frame.output=Text(self.output_frame,width=50,wrap=NONE)
+      self.output_frame.scroll.grid(row=0,column=1,sticky=N+S+E+W)
+      self.output_frame.scroll2.grid(row=1,column=0,sticky=S+E+W)
+      self.output_frame.output.grid(row=0,column=0,sticky=N+W)
+      self.output_frame.output.config(yscrollcommand=self.output_frame.scroll.set)
+      self.output_frame.output.config(xscrollcommand=self.output_frame.scroll2.set)
+      self.output_frame.scroll.config(command=self.output_frame.output.yview)
+      self.output_frame.scroll2.config(command=self.output_frame.output.xview)
+      
       self.button_frame = Frame(self.frame)
       self.create_method_frame = Frame(self.frame)
       self.create_method_frame.grid(row=1,column=1,sticky=N+E)
