@@ -128,6 +128,7 @@ class NotebookDemo(ttk.Frame):
       
 
    def load_file(self):
+      
       self.fname = askopenfilename()
       if self.fname:
          self.fileloader = proj.file_loader()
@@ -157,9 +158,12 @@ max_diff: maximum difference between mean train and test scores\n'
             self.toplevel.mindiff.grid(row=1,column=3)
             self.toplevel.label3=Label(self.toplevel.second_frame, text='max_diff')
             self.toplevel.label3.grid(row=1,column=2)
+
+      
              
       
    def populate_tree(self):
+      self.menu_file.entryconfig('Open Project', state='disabled')
       underscores=re.compile('\__')
       count = 0
       parentNode=""
@@ -184,7 +188,7 @@ max_diff: maximum difference between mean train and test scores\n'
 
    def new_project(self):
       self.create_model_tab()
-      self.menu_file.entryconfig('New Project', state='disabled')
+      
    
 
    def main_frame(self):
@@ -208,15 +212,18 @@ max_diff: maximum difference between mean train and test scores\n'
    
       self.master['menu']=menubar
       ## Add tabs
-      self.create_view_tab(nb)
-      self.create_model_tab(nb)
+      self.create_view_tab()
+      self.nb.add(self.frame, text="View Project")
+      #self.create_model_tab()
 
    def reset_table(self):
       self.table = TableCanvas(self.tframe,rows=0,cols=0)
       self.table.createTableFrame()
+      self.frame.button3.config(state='disabled')
+      self.frame.button2.config(state='normal')
 
-   def create_view_tab(self,nb):
-      self.frame = ttk.Frame(nb)
+   def create_view_tab(self):
+      self.frame = Frame(self.nb)
       self.frame.tree = ttk.Treeview(self.frame)
       self.frame.tree.grid(row=0, column=0, sticky=N+S+E+W)
 
@@ -242,14 +249,12 @@ max_diff: maximum difference between mean train and test scores\n'
       self.create_method_frame.method_entry.grid(row=0,column=3)
       self.create_method_frame.button=Button(self.create_method_frame, text="Plot method", command=self.set_method)
       self.create_method_frame.button.grid(row=0,column=4)
-
-          toolbar = NavigationToolbar2TkAgg(canvas, frame).grid(row=4, column=1, sticky=S+E+W)
       
       self.frame.button2 = Button(self.button_frame, text='Display', command=self.table_load, width=15)
       self.frame.button2.grid(row=0, column=0, sticky=N+E+W+S)
       
       self.frame.button3=Button(self.button_frame,text='Reset Display',command=self.reset_table, width=15)
-      self.frame.button3.grid(row=1, column=0, sticky=N+E+W+S)
+      self.frame.button3.grid(row=0, column=1, sticky=N+E+W+S)
 
       self.button_frame.grid(row=1,column=0, sticky=N+E)
 
@@ -263,20 +268,29 @@ max_diff: maximum difference between mean train and test scores\n'
 
       self.f = Figure(figsize=(3,1), dpi=200)
       self.canvas = FigureCanvasTkAgg(self.f, master=self.frame)
+      self.toolbar = NavigationToolbar2TkAgg(self.canvas, self.frame).grid(row=4, column=1, sticky=S+E+W)
       self.canvas.get_tk_widget().grid(row=3,column=1,sticky=N+S+E+W,ipady=50)
-
-      return frame
-
-      
-      #canvas._tkcanvas.grid
-
-      return self
-   
+      self.canvas.draw()
 
    def table_load(self):
       curItem = self.frame.tree.focus()
       print curItem
+
+      eval('self.project.'+curItem).to_csv('./temp.csv')
+      model=self.table.model
+      importer = TableImporter()
+      #importer.open_File('./temp.csv')
+      print self.table.model
+      dictionary = importer.ImportTableModel('./temp.csv')
+      os.system('rm temp.csv')
+
+      model.importDict(dictionary)
+      self.table.redrawTable()
+      self.frame.button2.config(state='disabled')
+      self.frame.button3.config(state='normal')
+      
    def create_model_tab(self):
+
       self.model_tab()
       self.nb.add(self.frame2, text='Create Model', underline=0, padding=2)
       self.nb.select(self.frame2)
@@ -327,6 +341,7 @@ max_diff: maximum difference between mean train and test scores\n'
       self.f = Figure(figsize=(2,1), dpi=100)
       
       self.canvas = FigureCanvasTkAgg(self.f, master=self.frame)
+      self.toolbar = NavigationToolbar2TkAgg(self.canvas, self.frame).grid(row=4, column=1, sticky=S+E+W)
       self.canvas.get_tk_widget().grid(row=3,column=1,sticky=N+S+E+W,ipady=50)
       self.a = self.f.add_subplot(111)
       for label in (self.a.get_xticklabels() + self.a.get_yticklabels()):
