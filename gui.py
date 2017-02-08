@@ -126,6 +126,7 @@ class NotebookDemo(ttk.Frame):
       self.isapp = isapp
       self._create_widgets()
       
+
    def load_file(self):
       self.fname = askopenfilename()
       if self.fname:
@@ -158,7 +159,6 @@ max_diff: maximum difference between mean train and test scores\n'
             self.toplevel.label3.grid(row=1,column=2)
              
       
-
    def populate_tree(self):
       underscores=re.compile('\__')
       count = 0
@@ -177,43 +177,34 @@ max_diff: maximum difference between mean train and test scores\n'
             
          count +=1
       #print count
-      #print len(dir(self.project))
-      
+      #print len(dir(project))     
 
    def _create_widgets(self): 
       self.main_frame()
 
    def new_project(self):
-       self.csvname = askopenfilename()
-       X,y,labels = proj.set_input(self.csvname)
-       self.toplevel=Toplevel()
+      self.create_model_tab()
+      self.menu_file.entryconfig('New Project', state='disabled')
+   
 
-       self.toplevel.label=Label(self.toplevel,text='Options:')
-       self.toplevel.label.grid(row=0,column=0,sticky=S+W)
-
-       self.toplevel.method_pane=Frame(master=self.toplevel)
-       self.toplevel.method_pane.pack()
-       self.toplevel.method_pane.label1=Label(self.toplevel.method_pane, test='K-Values')
-       self.toplevel.method_pane.pack()
    def main_frame(self):
-      mainPanel = Frame(self,name='main')
-      mainPanel.pack(side=TOP, fill=BOTH, expand=Y)
+      self.mainPanel = Frame(self,name='main')
+      self.mainPanel.pack(side=TOP, fill=BOTH, expand=Y)
 
-      nb = ttk.Notebook(mainPanel, name='notebook')
-      nb.enable_traversal()
-      nb.pack(fill=BOTH, expand=Y, padx=2, pady=3)
+      self.nb = ttk.Notebook(self.mainPanel, name='notebook')
+      self.nb.enable_traversal()
+      self.nb.pack(fill=BOTH, expand=Y, padx=2, pady=3)
 
       ## Menu
       menubar = Menu(self.master)
 
-      menu_file = Menu(menubar)
-      submenu = Menu(menubar)
-      submenu.add_command(label='From .csv', command=self.new_project)
-      menubar.add_cascade(menu=menu_file, label='Project')
-      menu_file.add_cascade(menu=submenu,label='New Project')
+      self.menu_file = Menu(menubar)
       
-      menu_file.add_command(label='Open Project', command=self.load_file)
-      menu_file.add_command(label='Clear Project', command=self.__init__)
+      menubar.add_cascade(menu=self.menu_file, label='Project')
+      
+      self.menu_file.add_command(label='Open Project', command=self.load_file)
+      self.menu_file.add_command(label='Clear Project', command=self.__init__)
+      self.menu_file.add_command(label='New Project', command=self.new_project)
    
       self.master['menu']=menubar
       ## Add tabs
@@ -252,6 +243,7 @@ max_diff: maximum difference between mean train and test scores\n'
       self.create_method_frame.button=Button(self.create_method_frame, text="Plot method", command=self.set_method)
       self.create_method_frame.button.grid(row=0,column=4)
 
+          toolbar = NavigationToolbar2TkAgg(canvas, frame).grid(row=4, column=1, sticky=S+E+W)
       
       self.frame.button2 = Button(self.button_frame, text='Display', command=self.table_load, width=15)
       self.frame.button2.grid(row=0, column=0, sticky=N+E+W+S)
@@ -273,33 +265,37 @@ max_diff: maximum difference between mean train and test scores\n'
       self.canvas = FigureCanvasTkAgg(self.f, master=self.frame)
       self.canvas.get_tk_widget().grid(row=3,column=1,sticky=N+S+E+W,ipady=50)
 
-      #self.canvas._tkcanvas.grid
+      return frame
 
-      nb.add(self.frame, text='View Project', underline=0, padding=2)
+      
+      #canvas._tkcanvas.grid
 
       return self
    
-   def create_model_tab(self,nb):
-      self.frame2 = Frame()
-      nb.add(self.frame2, text='Create Model', underline=0, padding=2)
-      self.frame2.button1=Button(self.frame2,text='yolo')
-      self.frame2.button1.pack()
-      return self
 
    def table_load(self):
       curItem = self.frame.tree.focus()
       print curItem
+   def create_model_tab(self):
+      self.model_tab()
+      self.nb.add(self.frame2, text='Create Model', underline=0, padding=2)
+      self.nb.select(self.frame2)
       
-      eval('self.project.'+curItem).to_csv('./temp.csv')
-      model=self.table.model
-      importer = TableImporter()
-      #importer.open_File('./temp.csv')
-      print self.table.model
-      dictionary = importer.ImportTableModel('./temp.csv')
-      os.system('rm temp.csv')
+          
+   def model_tab(self):
 
-      model.importDict(dictionary)
-      self.table.redrawTable()
+      self.frame2 = Frame(self.nb,bg="")
+      self.frame2.pack()
+
+      self.frame2.kvals=Frame(self.frame2)
+      self.frame2.kvals.grid(row=0,column=0,sticky=N+E+W+S)
+
+      self.frame2.kvals.label1=Label(self.frame2,text='K-values')
+      self.frame2.kvals.label1.grid(row=0,column=0,sticky=N+W+E+S)
+
+      self.frame2.separator1=ttk.Separator(self.frame2, orient=HORIZONTAL)
+      self.frame2.separator1.grid(row=1,column=0)
+
 
    def qfilter_button(self):
       
