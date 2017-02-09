@@ -26,6 +26,15 @@ from matplotlib.figure import Figure
 
 import csv
 
+
+root = Tk()
+
+# a fix for running on OSX - to center the title text vertically
+if root.tk.call('tk', 'windowingsystem') == 'aqua':  # only for OSX
+    s = ttk.Style()
+    # Note: the name is specially for the text in the widgets
+    s.configure('TNotebook.Tab', padding=(12, 8, 12, 0))
+
 def quality_filter(results, min_train_score=0.75, max_diff=0.15):
 
     results.reset_index(drop=True, inplace=True)
@@ -145,7 +154,7 @@ max_diff: maximum difference between mean train and test scores\n'
 
             self.toplevel.message = Label(self.toplevel, text=message, wraplength=3000)
             self.toplevel.message.grid(row=0)
-            self.toplevel.second_frame=Frame(self.toplevel)
+            self.toplevel.second_frame=ttk.Frame(self.toplevel)
             self.toplevel.second_frame.grid(row=1)
 
             self.toplevel.button2=Button(self.toplevel.second_frame, text="Quality Filter", command=self.qfilter_button)
@@ -187,17 +196,21 @@ max_diff: maximum difference between mean train and test scores\n'
       self.main_frame()
 
    def new_project(self):
-      self.create_model_tab()
+
+      self.frame2 = self.create_model_tab()
+      self.nb.add(self.frame2, text="Create Project")
       
-   
+      self.nb.tab(1,state='normal')
+      self.nb.select(1)
+      self.menu_file.entryconfig("New Project", state='disabled')
+
+      
 
    def main_frame(self):
-      self.mainPanel = Frame(self,name='main')
+      self.mainPanel = ttk.Frame(name='main')
       self.mainPanel.pack(side=TOP, fill=BOTH, expand=Y)
 
       self.nb = ttk.Notebook(self.mainPanel, name='notebook')
-      self.nb.enable_traversal()
-      self.nb.pack(fill=BOTH, expand=Y, padx=2, pady=3)
 
       ## Menu
       menubar = Menu(self.master)
@@ -211,10 +224,14 @@ max_diff: maximum difference between mean train and test scores\n'
       self.menu_file.add_command(label='New Project', command=self.new_project)
    
       self.master['menu']=menubar
+
       ## Add tabs
+      self.nb.pack(fill=BOTH, expand=Y, padx=2, pady=3)
+
       self.create_view_tab()
       self.nb.add(self.frame, text="View Project")
-      #self.create_model_tab()
+      self.nb.select(0)
+      
 
    def reset_table(self):
       self.table = TableCanvas(self.tframe,rows=0,cols=0)
@@ -223,14 +240,18 @@ max_diff: maximum difference between mean train and test scores\n'
       self.frame.button2.config(state='normal')
 
    def create_view_tab(self):
-      self.frame = Frame(self.nb)
+      def textclear():
+          self.output_frame.output.delete(1.0,END)
+          
+      self.frame = ttk.Frame(self.nb)
+      self.frame.grid(row=0,column=0)
       self.frame.tree = ttk.Treeview(self.frame)
       self.frame.tree.grid(row=0, column=0, sticky=N+S+E+W)
 
-      self.output_frame = Frame(self.frame)
+      self.output_frame = ttk.Frame(self.frame)
       self.output_frame.grid(row=3,column=0,sticky=N+S+E)
-      self.output_frame.scroll=Scrollbar(self.output_frame)
-      self.output_frame.scroll2=Scrollbar(self.output_frame, orient=HORIZONTAL)
+      self.output_frame.scroll=ttk.Scrollbar(self.output_frame)
+      self.output_frame.scroll2=ttk.Scrollbar(self.output_frame, orient=HORIZONTAL)
       self.output_frame.output=Text(self.output_frame,width=50,wrap=NONE)
       self.output_frame.scroll.grid(row=0,column=1,sticky=N+S+E+W)
       self.output_frame.scroll2.grid(row=1,column=0,sticky=S+E+W)
@@ -240,29 +261,30 @@ max_diff: maximum difference between mean train and test scores\n'
       self.output_frame.scroll.config(command=self.output_frame.output.yview)
       self.output_frame.scroll2.config(command=self.output_frame.output.xview)
       
-      self.button_frame = Frame(self.frame)
-      self.create_method_frame = Frame(self.frame)
+      self.button_frame = ttk.Frame(self.frame)
+      self.create_method_frame = ttk.Frame(self.frame)
       self.create_method_frame.grid(row=1,column=1,sticky=N+E)
-      self.create_method_frame.label1=Label(self.create_method_frame, text='Index')
+      self.create_method_frame.label1=ttk.Label(self.create_method_frame, text='Index')
       self.create_method_frame.label1.grid(row=0,column=2)
-      self.create_method_frame.method_entry = Entry(self.create_method_frame)
+      self.create_method_frame.method_entry = ttk.Entry(self.create_method_frame)
       self.create_method_frame.method_entry.grid(row=0,column=3)
-      self.create_method_frame.button=Button(self.create_method_frame, text="Plot method", command=self.set_method)
+      self.create_method_frame.button= ttk.Button(self.create_method_frame, text="Plot method", command=self.set_method)
       self.create_method_frame.button.grid(row=0,column=4)
       
-      self.frame.button2 = Button(self.button_frame, text='Display', command=self.table_load, width=15)
+      self.frame.button2 = ttk.Button(self.button_frame, text='Display', command=self.table_load, width=15)
       self.frame.button2.grid(row=0, column=0, sticky=N+E+W+S)
       
-      self.frame.button3=Button(self.button_frame,text='Reset Display',command=self.reset_table, width=15)
+      self.frame.button3= ttk.Button(self.button_frame,text='Reset Display',command=self.reset_table, width=15)
       self.frame.button3.grid(row=0, column=1, sticky=N+E+W+S)
 
-      self.button_frame.grid(row=1,column=0, sticky=N+E)
+      self.frame.button4 = ttk.Button(self.frame, text='Clear', command=textclear)
+      self.frame.button4.grid(row=4,column=0,sticky=N+E)
 
-      self.frame.rowconfigure(0, weight=1)
-      self.frame.columnconfigure((0,1), weight=2)
+      self.button_frame.grid(row=1,column=0, sticky=N+E)
       
-      self.tframe = Frame(self.frame)
+      self.tframe = ttk.Frame(self.frame)
       self.tframe.grid(row=0, column=1, sticky=N+S+E+W)
+      
       self.table = TableCanvas(self.tframe,rows=0,cols=0)
       self.table.createTableFrame()
 
@@ -271,6 +293,10 @@ max_diff: maximum difference between mean train and test scores\n'
       self.toolbar = NavigationToolbar2TkAgg(self.canvas, self.frame).grid(row=4, column=1, sticky=S+E+W)
       self.canvas.get_tk_widget().grid(row=3,column=1,sticky=N+S+E+W,ipady=50)
       self.canvas.draw()
+
+      self.frame.rowconfigure(0, weight=1)
+      self.frame.columnconfigure(1, weight=2)
+
 
    def table_load(self):
       curItem = self.frame.tree.focus()
@@ -288,27 +314,60 @@ max_diff: maximum difference between mean train and test scores\n'
       self.table.redrawTable()
       self.frame.button2.config(state='disabled')
       self.frame.button3.config(state='normal')
-      
-   def create_model_tab(self):
 
-      self.model_tab()
-      self.nb.add(self.frame2, text='Create Model', underline=0, padding=2)
-      self.nb.select(self.frame2)
-      
           
-   def model_tab(self):
-
-      self.frame2 = Frame(self.nb,bg="")
+   def create_model_tab(self):
+      
+      self.frame2 = ttk.Frame(self.nb)
       self.frame2.pack()
 
-      self.frame2.kvals=Frame(self.frame2)
-      self.frame2.kvals.grid(row=0,column=0,sticky=N+E+W+S)
+      self.frame2.methods=ttk.Labelframe(master=self.frame2, text='Methods')
+      self.frame2.methods.grid(row=0,column=0,padx=20, pady=10, sticky=N+S+E+W)
 
-      self.frame2.kvals.label1=Label(self.frame2,text='K-values')
-      self.frame2.kvals.label1.grid(row=0,column=0,sticky=N+W+E+S)
+      self.frame2.methods.check1 = ttk.Checkbutton(master=self.frame2.methods, text="Random Forest", state='disabled')
+      self.frame2.methods.check1.grid(row=0,column=0, sticky=N+S+W, padx=10)
+      self.frame2.methods.check2 = ttk.Checkbutton(master=self.frame2.methods, text="Extra Trees", state='disabled')
+      self.frame2.methods.check2.grid(row=1,column=0, sticky=N+S+W, padx=10)
+      self.frame2.methods.check3 = ttk.Checkbutton(master=self.frame2.methods, text="Linear Regression", state='disabled')
+      self.frame2.methods.check3.grid(row=2,column=0, sticky=N+S+W, padx=10)
+      self.frame2.methods.check4 = ttk.Checkbutton(master=self.frame2.methods, text="Ridge", state='disabled')
+      self.frame2.methods.check4.grid(row=3,column=0, sticky=N+S+W, padx=10)
+      self.frame2.methods.check5 = ttk.Checkbutton(master=self.frame2.methods, text="Ridge CV", state='disabled') ## DON'T ENABLE
+      self.frame2.methods.check5.grid(row=4,column=0, sticky=N+S+W, padx=10)
+      self.frame2.methods.check6 = ttk.Checkbutton(master=self.frame2.methods, text="Lasso", state='disabled')
+      self.frame2.methods.check6.grid(row=5,column=0, sticky=N+S+W, padx=10)
+      self.frame2.methods.check7 = ttk.Checkbutton(master=self.frame2.methods, text="Lasso CV", state='disabled')
+      self.frame2.methods.check7.grid(row=0,column=1, sticky=N+S+W, padx=10)
+      self.frame2.methods.check8 = ttk.Checkbutton(master=self.frame2.methods, text="Lasso Lars CV", state='disabled')
+      self.frame2.methods.check8.grid(row=1,column=1, sticky=N+S+W, padx=10)
+      self.frame2.methods.check9 = ttk.Checkbutton(master=self.frame2.methods, text="Lasso Lars IC", state='disabled')
+      self.frame2.methods.check9.grid(row=2,column=1, sticky=N+S+W, padx=10)
+      self.frame2.methods.check10 = ttk.Checkbutton(master=self.frame2.methods, text="Elastic Net", state='disabled')
+      self.frame2.methods.check10.grid(row=3,column=1, sticky=N+S+W, padx=10)
+      self.frame2.methods.check11 = ttk.Checkbutton(master=self.frame2.methods, text="Elastic Net CV", state='disabled')
+      self.frame2.methods.check11.grid(row=4,column=1, sticky=N+S+W, padx=10)
+      self.frame2.methods.check12 = ttk.Checkbutton(master=self.frame2.methods, text="Linear SVR", state='disabled')
+      self.frame2.methods.check12.grid(row=5,column=1, sticky=N+S+W, padx=10)
 
-      self.frame2.separator1=ttk.Separator(self.frame2, orient=HORIZONTAL)
-      self.frame2.separator1.grid(row=1,column=0)
+      self.frame2.kvals=ttk.Labelframe(master=self.frame2, text='K-values')
+      self.frame2.kvals.grid(row=0,column=1, sticky=N+S+E+W, padx=20, pady=10)
+
+      self.frame2.kvals.label1 = ttk.Label(master=self.frame2.kvals, text='Min. no. of descriptors')
+      self.frame2.kvals.label1.grid(row=0,column=0,sticky=N+S+W, padx=10)
+      self.frame2.kvals.list1 = ttk.Combobox(self.frame2.kvals, state='disabled')
+      self.frame2.kvals.list1.grid(row=0,column=1)
+      self.frame2.kvals.label2 = ttk.Label(master=self.frame2.kvals, text='Max. no. of descriptors')
+      self.frame2.kvals.label2.grid(row=1,column=0,sticky=N+S+W, padx=10)
+      self.frame2.kvals.list2 = ttk.Combobox(self.frame2.kvals, state='disabled')
+      self.frame2.kvals.list2.grid(row=1,column=1)
+      self.frame2.kvals.label3 = ttk.Label(master=self.frame2.kvals, text='Increment')
+      self.frame2.kvals.label3.grid(row=2,column=0,sticky=N+S+W, padx=10)
+      self.frame2.kvals.list3 = ttk.Combobox(self.frame2.kvals, state='disabled')
+      self.frame2.kvals.list3.grid(row=2,column=1)
+
+      self.nb.pack()
+
+      return self.frame2
 
 
    def qfilter_button(self):
@@ -352,7 +411,6 @@ max_diff: maximum difference between mean train and test scores\n'
       self.a.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=1, ncol=1,  borderaxespad=0., fontsize=7)
       
       self.canvas.draw()
-
 
 
 if __name__ == "__main__":
