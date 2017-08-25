@@ -76,7 +76,7 @@ def fit_method(self,ind,results):
       _,self.clf,_ = temp.set_method(setup[2]) 
 
       # get the development set features
-      X_dev_temp, _ = pm.get_X(self.project.dev_set.matrix_raw, \
+      X_dev_temp, self.descriptors = pm.get_X(self.project.dev_set.matrix_raw, \
                               self.project.meth.indvals[setup[0]][setup[1]]) 
       # get the evaluation set features
       X_eval_temp, _ = pm.get_X(self.project.eval_set.matrix_raw, \
@@ -92,7 +92,7 @@ def fit_method(self,ind,results):
       # set estimator hyper-parameters
       self.clf.set_params(**params)
       
-      self.output_frame.output.insert(END,str(str(self.clf)+'\n'))
+      self.output_frame.output.insert(END,str(str(self.clf)+'\n\n'))
 
       # fit the estimator to the development set
       self.clf.fit(X_dev_temp, self.project.dev_set.y_raw)
@@ -115,6 +115,21 @@ def fit_method(self,ind,results):
       eval_medae.append(metrics.median_absolute_error(eval_predict, self.project.eval_set.y_raw))
       method_ids.append(string)
       parameters.append(params)
+
+      if hasattr(self.clf,'coef_'):
+
+          string2="equation = "
+
+	  string2 += str(self.clf.intercept_)
+
+          for i in range(0,len(self.clf.coef_)):
+              if self.clf.coef_[i] !=0:
+                  string2 += str(' + ' + str(self.clf.coef_[i]) + '*' + str(self.descriptors[i] + '\n'))
+
+          string2 += '\n'
+
+          
+          self.output_frame.output.insert(END,string2)
 
    # create dictionary object from results
    evaluation_results = {'dev_set_score':dev_set_score, 'eval_set_score':eval_set_score, \
@@ -265,11 +280,13 @@ max_diff: maximum difference between mean train and test scores\n'
       self.create_method_frame = ttk.Frame(self.frame)
       self.create_method_frame.grid(row=1,column=1,sticky=N+E)
       self.create_method_frame.label1=ttk.Label(self.create_method_frame, text='Index')
-      self.create_method_frame.label1.grid(row=0,column=2)
+      self.create_method_frame.label1.grid(row=0,column=2, sticky=N+E)
       self.create_method_frame.method_entry = ttk.Entry(self.create_method_frame)
-      self.create_method_frame.method_entry.grid(row=0,column=3)
+      self.create_method_frame.method_entry.grid(row=0,column=3, sticky=N+E)
       self.create_method_frame.button= ttk.Button(self.create_method_frame, text="Plot method", command=self.set_method)
-      self.create_method_frame.button.grid(row=0,column=4)
+      self.create_method_frame.button.grid(row=0,column=4, sticky=N+E)
+      self.create_method_frame.button2= ttk.Button(self.create_method_frame, text="Filter", command=self.filters_pane)
+      self.create_method_frame.button2.grid(row=0,column=5, sticky = N+E)
       
       self.frame.button2 = ttk.Button(self.button_frame, text='Display', command=self.table_load, width=15)
       self.frame.button2.grid(row=0, column=0, sticky=N+E+W+S)
@@ -308,12 +325,93 @@ max_diff: maximum difference between mean train and test scores\n'
       #importer.open_File('./temp.csv')
       print self.table.model
       dictionary = importer.ImportTableModel('./temp.csv')
-      os.system('rm temp.csv')
+      #os.system('rm temp.csv')
 
       model.importDict(dictionary)
       self.table.redrawTable()
       self.frame.button2.config(state='disabled')
       self.frame.button3.config(state='normal')
+
+   def descriptors_filter(self):
+       self.descriptors_frame=ttk.Frame(self.filter_pane)
+       self.descriptors_frame.grid(row=1,column=0)
+       self.descriptors_frame.l1=ttk.Label(self.descriptors_frame, text='Min no.')
+       self.descriptors_frame.l1.grid(row=0,column=0)
+       min_descriptors = self.descriptors_frame.o1=ttk.Combobox(self.descriptors_frame)
+       self.descriptors_frame.o1.grid(row=0,column=1)
+       self.descriptors_frame.l2=ttk.Label(self.descriptors_frame, text='Max no.')
+       self.descriptors_frame.l2.grid(row=1,column=0)
+       max_descriptors = self.descriptors_frame.o2=ttk.Combobox(self.descriptors_frame)
+       self.descriptors_frame.o2.grid(row=1,column=1)
+
+       curItem = self.frame.tree.focus()
+       results = eval('self.project.'+curItem)
+       ind=range(0,len(results))
+       descriptor_numbers=[]
+       for i in ind:
+           fit_method(self,[i],results)
+           count=0
+
+           if hasattr(self.clf,'coef_'):
+               for i in self.clf.coef_:
+                   if abs(i)>0:
+                       count+=1
+               descriptor_numbers.append(count)
+           if hasattr(self.clf,'feature_importances_'):
+               for i in self.clf.feature_importances_:
+                   if abs(i)>0:
+                       count+=1
+               descriptor_numbers.append(count)
+
+       min_vals = range(min(descriptor_numbers),max(descriptor_numbers)-1)
+       max_vals = range(min(descriptor_numbers),max(descriptor_numbers))
+
+       max_descriptors['values']=max_vals
+       min_descriptors['values']=min_vals
+
+       self.descriptor_numbers=descriptor_numbers
+
+       self.descriptors_frame.button=ttk.Button(self.descriptors_frame, text='Run', command=self.new_table_descriptors)
+       self.descriptors_frame.button.grid(row=2,column=1, sticky=E)
+
+       
+       self.project.new_table=pd.DataFrame(results)
+
+   def new_table_descriptors(self):
+
+        droplist = []
+        for i in range(0,len(self.descriptor_numbers)):
+            if float(self.descriptor_numbers[i]) < float(self.descriptors_frame.o1.get()) or self.descriptor_numbers[i] > float(self.descriptors_frame.o2.get()):
+                   droplist.append(i)
+
+        self.project.new_table.drop(droplist, axis=0, inplace=True)
+
+        self.reset_table()
+
+        print droplist
+
+        self.descriptor_filt = self.frame.tree.insert('','end','',text='Descriptors Filter')
+        self.frame.tree.insert(self.descriptor_filt, 'end', 'new_table', text='new_table')
+        
+   def filters_pane(self):
+
+           
+       self.create_method_frame.button2.config(state='disabled')
+       
+       self.filter_pane=ttk.Frame(self.frame)
+       self.filter_pane.grid(row=0,column=2,sticky=N+S+E, padx=10, pady=10)
+
+       self.filter_pane.p1 = ttk.Labelframe(master=self.filter_pane, text='Filters')
+       self.filter_pane.p1.grid(row=0,column=0,sticky=N+S+E)
+       self.filter_pane.button1=ttk.Button(master=self.filter_pane.p1, text='Descriptors', command=self.descriptors_filter)
+       self.filter_pane.button1.grid(row=0,column=1)
+       self.filter_pane.button2=ttk.Button(master=self.filter_pane.p1, text='Error')
+       self.filter_pane.button2.grid(row=0,column=2)
+       self.filter_pane.button3=ttk.Button(master=self.filter_pane.p1, text='Variance')
+       self.filter_pane.button3.grid(row=0,column=3)
+
+
+       
 
           
    def create_model_tab(self):

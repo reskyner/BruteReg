@@ -26,6 +26,7 @@ def set_input(filename):
 
 
 def save_eval(filename, all_data):
+    proj=project()
     devobj = proj.input_object()
     evalobj = proj.input_object()
     methobj = proj.method_object()
