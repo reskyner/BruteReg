@@ -36,7 +36,7 @@ def save_eval(filename, all_data):
     methobj.create_object(all_data.k_vals, all_data.selection_labels, all_data.ind_values, all_data.options)
     projectobj.save_project(all_data.results, devobj, evalobj, methobj, filename)
     
-def save_analysis(analysis_results, filename):
+def save_analysis(filename, analysis_results):
     check = file_loader()
     verify = check_contents(filename)
     if verify == 4:
