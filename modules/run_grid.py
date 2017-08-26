@@ -91,12 +91,16 @@ Development: Currently only a default set of hyper-parameters are enabled...
                         print('Recording results for current method...')
                         all_data.results = pd.concat([all_data.results, pd.DataFrame(temp_results)])
                         print('Done with current method... woohoo!\n\n')
+                    except (KeyboardInterrupt, SystemExit):
+                        raise
                     except:
                         all_data.results = []
                         all_data.results = pd.DataFrame(temp_results)
                         print('Done with current method... woohoo!\n\n')
 
                 # Error handling for failed methods
+                except (KeyboardInterrupt, SystemExit):
+                    raise
                 except:
                     print(str('The current method (id: ' + str(method_id) + ') has failed... Check hyperparameters'))
                     continue
