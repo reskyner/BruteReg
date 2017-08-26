@@ -1,21 +1,43 @@
-import sys
+import sys, getopt, os
 #sys.path.append('/usr/local/lib/python2.7/site-packages')
 sys.path.append('./modules')
 
 from sklearn import metrics
+import pandas as pd
+import numpy as np
 
 ## import modules to build pipelines
 import projecthandle as proj
 import run_grid as rg
 
-import pandas as pd
-import numpy as np
+## suppress all warnings - will stop stupid convergence thing - consider revising
+# todo: figure out which models auto throw warning (e.g. alpha=0 warning)
+import warnings
+warnings.filterwarnings("ignore")
 
-# todo: input file, output file(s),
+# todo: write full notes section
+USAGE = """
+brutereg.py - Run a cross validated grid search of regression methods for an input set of predictors and descriptors
 
-def quality_filter(all_data, min_train_score=0.75, max_diff=0.15):
+SYNOPSIS: 
 
-    # todo: customisable train score and difference
+  usage: brutereg.py -i <input_file> -o <output_file> [-mt <min_train_score> -md <max_train-test>]
+
+OPTIONS:
+
+  -i (--input=)           an input .csv file:- c1=reference c2=predictor c2-cn=descriptors
+  -o (--output=)          an output pickle file containing the results of brutereg, which can be analysed with BruteSis
+  -m (--min_train_score=) minimum R**2 score of training sets to keep models for
+  -d (--max_diff=)        max difference between R**2 of training and test sets to keep models for
+
+NOTES:
+
+     
+
+"""
+
+
+def quality_filter(all_data, min_train_score, max_diff):
 
     results = all_data.eval_results
 
@@ -97,11 +119,46 @@ def save_eval(filename, all_data):
     methobj.create_object(all_data.k_vals, all_data.selection_labels, all_data.ind_values, all_data.options)
     projectobj.save_project(all_data.results, devobj, evalobj, methobj, filename)
 
-X,y,labels = proj.set_input('./input_files/hfe_descriptors_2.csv')
-results = rg.auto_grid(X, y, labels)
-proj.save_eval('./results/evaluation_set', results)
-analysis_set = quality_filter(results)
-proj.save_analysis('./results/analysis_set', analysis_set)
+
+def main(argv):
+    # set
+    input_file = ''
+    output_file = ''
+    min_train_score = 0.75
+    max_diff = 0.15
+    try:
+        opts, args = getopt.getopt(argv,"hi:o:md",["input=", "output=", "min_train_score=", "max_diff="])
+    except getopt.GetoptError:
+        print USAGE
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print USAGE
+            sys.exit()
+        elif opt in ("-i", "--input"):
+            input_file = arg
+        elif opt in ("-o", "--output"):
+            output_file = arg
+        elif opt in ("-m", "--min_train_score"):
+            min_train_score = arg
+        elif opt in ("-d", "--max_diff"):
+            max_diff = arg
+
+    print('**********************************************************************************\n')
+    print('Running BruteReg on: ' + str(input_file))
+    print('Will save project to: ' + str(output_file) + '\n')
+    print('**********************************************************************************\n\n')
+
+    print('Separating data from input for grid search...')
+    X,y,labels = proj.set_input(str(input_file))
+    print('Running grid search. Please note this will take a hell of a long time!')
+    results = rg.auto_grid(X, y, labels)
+    proj.save_eval(str(output_file), results)
+    analysis_set = quality_filter(results)
+    proj.save_analysis(str(output_file), analysis_set)
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
 
 # to_drop = []
 # for i in range(0, len(evaluation_results)-1):

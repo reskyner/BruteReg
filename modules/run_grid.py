@@ -6,22 +6,22 @@ sys.path.append('/usr/local/lib/python2.7/site-packages')
 sys.path.append('./modules')
 
 import pipemodules as pm
-import projecthandle as proj
+#import projecthandle as proj
 import numpy as np
 import re
-import warnings
 import pandas as pd
+#from tqdm import tqdm
 
 def auto_grid(X, y, labels, ks=range(5,100,5), opts=[1,2,3,4,6,7,8,9,10,11,12]): 
     """Run a grid search... auto_grid(X, y, labels, ks=range(10,100,10) opts=[1...12])
 -------------------------------------------------------------------------------
 Required: X - matrix of descriptors
-	  y - response values
-	  labels - labels for structures
+	      y - response values
+	      labels - labels for structures
 Optional: ks - array of k-values (number of features to be selected
-	  opts - array of option numbers where:
+	      opts - array of option numbers where:
 
-        	1: Random forest
+        	    1: Random forest
             	2: Extra random trees
             	3: Simple OLS linear regression
             	4: Ridge regression
@@ -43,9 +43,13 @@ Development: Currently only a default set of hyper-parameters are enabled...
                 We reccomend you create a backup of the original file!"""
 
     ## Preprocess data
+    print('Running preprocessing step...')
     all_data = pm.preprocess()
+    print('Splitting data in half for training and testing...')
     all_data.data_split(X, y, labels)
 
+
+    print('Running descriptors through feature selector in chunks...')
     ## Feature selection - Reduce the number of descriptors to use before regression
     all_data.k_vals = ks  
 
@@ -54,7 +58,9 @@ Development: Currently only a default set of hyper-parameters are enabled...
     results = []
 
     ## For the number of selection labels
+    print('Starting grid search step...')
     for j in range(0,len(all_data.selection_labels)):
+        print ('\nProgress of auto_grid: ')
         for k in range(0,len(all_data.selection_labels[j])):
 
             k_select = all_data.k_vals[j]    
@@ -70,27 +76,29 @@ Development: Currently only a default set of hyper-parameters are enabled...
 
                     # Set up method calculation object parameters
                     method_id = str([j,k,i])
+                    print('Setting up model with index: ' + method_id)
                     grid_search = pm.search_random_forest()
                     grid_search.set_method(i)
                     
                     grid_search.set_parameters()
 
                     # run current method
+                    print('Running grid search for current method...')
                     temp_results = grid_search.run(X_temp, all_data.Y_train, method_id)
 
                     # add results to table
                     try:
+                        print('Recording results for current method...')
                         all_data.results = pd.concat([all_data.results, pd.DataFrame(temp_results)])
-                        #print str(j) + ' ' + str(k) + ' ' + str(i)
-			#print all_data.results
+                        print('Done with current method... woohoo!\n\n')
                     except:
                         all_data.results = []
                         all_data.results = pd.DataFrame(temp_results)
-                        #print str(j) + ' ' + str(k) + ' ' + str(i)
+                        print('Done with current method... woohoo!\n\n')
 
                 # Error handling for failed methods
                 except:
-                    warnings.warn(str('The current method (id: ' + str(method_id) + ') has failed...'))
+                    print(str('The current method (id: ' + str(method_id) + ') has failed... Check hyperparameters'))
                     continue
 
     ## rank the results according to mean test score
