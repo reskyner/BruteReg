@@ -32,8 +32,6 @@ OPTIONS:
 
 NOTES:
 
-     
-
 """
 
 
@@ -107,9 +105,6 @@ def quality_filter(all_data, min_train_score, max_diff):
     return analysis_set
 
 def save_eval(filename, all_data):
-
-    # todo: customisable data split by percentage train - linked to pipemodules.preprocess.datasplit()
-
     devobj = proj.input_object()
     evalobj = proj.input_object()
     methobj = proj.method_object()

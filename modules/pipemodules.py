@@ -180,7 +180,6 @@ class search_random_forest(object):
             self.method_no = 12
             self.clf = svm.LinearSVR()
 
-
         return self.method_str, self.clf, self.method_no
 
 
