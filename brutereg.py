@@ -126,8 +126,10 @@ def main(argv):
     output_file = ''
     min_train_score = 0.75
     max_diff = 0.15
+    train_percentage = 50
     try:
-        opts, args = getopt.getopt(argv,"hi:o:md",["input=", "output=", "min_train_score=", "max_diff="])
+        opts, args = getopt.getopt(argv,"hi:o:mdp",["input=", "output=", "min_train_score=", "max_diff=",
+                                                    "train_percentage="])
     except getopt.GetoptError:
         print USAGE
         sys.exit(2)
@@ -143,6 +145,16 @@ def main(argv):
             min_train_score = arg
         elif opt in ("-d", "--max_diff"):
             max_diff = arg
+        elif opt in ("-p", "--train_percentage"):
+            train_percentage = arg
+
+    if len(input_file) < 1 :
+        print('ERROR: Must specify an input file!')
+        sys.exit()
+
+    if len(output_file) < 1:
+        print('ERROR: Must specify an output file!')
+        sys.exit()
 
     print('**********************************************************************************\n')
     print('Running BruteReg on: ' + str(input_file))
@@ -152,54 +164,10 @@ def main(argv):
     print('Separating data from input for grid search...')
     X,y,labels = proj.set_input(str(input_file))
     print('Running grid search. Please note this will take a hell of a long time!')
-    results = rg.auto_grid(X, y, labels)
+    results = rg.auto_grid(X, y, labels, train_percentage)
     proj.save_eval(str(output_file), results)
     analysis_set = quality_filter(results)
     proj.save_analysis(str(output_file), analysis_set)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-
-# to_drop = []
-# for i in range(0, len(evaluation_results)-1):
-#     if str(evaluation_results.method_ids[i])==str(evaluation_results.method_ids[i+1]):
-#         to_drop.append(i+1)
-#     else:
-#         continue
-#
-# for i in to_drop:
-#     evaluation_results.drop(i, inplace=True)
-#
-# evaluation_results.sort_values(by='rank_test_score', inplace=True)
-# evaluation_results.reset_index(drop=True, inplace=True)
-#
-# currind = 0
-# to_drop = []
-# for i in range(0, len(evaluation_results)-1):
-#     if abs(evaluation_results.eval_set_score[currind] - evaluation_results.eval_set_score[i+1]) < 0.01         and abs(evaluation_results.dev_set_score[i] - evaluation_results.dev_set_score[i+1]) < 0.01:
-#         to_drop.append(i+1)
-#     else:
-#         currind = i
-#
-# for i in to_drop:
-#     evaluation_results.drop(i, inplace=True)
-#
-# evaluation_results.sort_values(by='rank_test_score', inplace=True)
-# evaluation_results.reset_index(drop=True, inplace=True)
-#
-# to_drop = []
-# for i in range(0, len(evaluation_results)-1):
-#     if str(evaluation_results.method_ids[i])==str(evaluation_results.method_ids[i+1]):
-#         to_drop.append(i+1)
-#     else:
-#         continue
-#
-# for i in to_drop:
-#     evaluation_results.drop(i, inplace=True)
-#
-# evaluation_results.sort_values(by='rank_test_score', inplace=True)
-# evaluation_results.reset_index(drop=True, inplace=True)
-
-
-
-
