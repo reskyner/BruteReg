@@ -160,8 +160,10 @@ def main(argv):
     X,y,labels = proj.set_input(str(input_file))
     print('Running grid search. Please note this will take a hell of a long time!')
     results = rg.auto_grid(X, y, labels, train_percentage)
+
+
     proj.save_eval(str(output_file), results)
-    analysis_set = quality_filter(results)
+    analysis_set = quality_filter(results, min_train_score, max_diff)
     proj.save_analysis(str(output_file), analysis_set)
 
 if __name__ == "__main__":

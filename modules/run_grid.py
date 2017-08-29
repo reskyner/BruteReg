@@ -60,7 +60,6 @@ Development: Currently only a default set of hyper-parameters are enabled...
     ## For the number of selection labels
     print('Starting grid search step...')
     for j in range(0,len(all_data.selection_labels)):
-        print ('\nProgress of auto_grid: ')
         for k in range(0,len(all_data.selection_labels[j])):
 
             k_select = all_data.k_vals[j]    
@@ -76,14 +75,14 @@ Development: Currently only a default set of hyper-parameters are enabled...
 
                     # Set up method calculation object parameters
                     method_id = str([j,k,i])
-                    print('Setting up model with index: ' + method_id)
+                    # print('Setting up model with index: ' + method_id)
                     grid_search = pm.search_random_forest()
                     grid_search.set_method(i)
                     
                     grid_search.set_parameters()
 
                     # run current method
-                    print('Running grid search for current method...')
+                    # print('Running grid search for current method...')
                     temp_results = grid_search.run(X_temp, all_data.Y_train, method_id)
 
                     # add results to table
@@ -102,7 +101,7 @@ Development: Currently only a default set of hyper-parameters are enabled...
                 except (KeyboardInterrupt, SystemExit):
                     raise
                 except:
-                    print(str('The current method (id: ' + str(method_id) + ') has failed... Check hyperparameters'))
+                    print(str('The current method (id: ' + str(method_id) + ') has failed... Check hyperparameters\n'))
                     continue
 
     ## rank the results according to mean test score

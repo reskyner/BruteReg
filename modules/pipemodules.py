@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # coding=utf8
 
+import time
 import sys
 sys.path.append('/usr/local/lib/python2.7/site-packages')
 
@@ -258,42 +259,39 @@ class search_random_forest(object):
         return self.parameters
 
 
-    def run(self, X, y, meth_id, out=False):
+    def run(self, X, y, meth_id):
 
-        if out == True:
-            print 'Running a grid search (CV) with ' + str(self.method) + '...'
-        
-        runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=None)
-        results = runner.fit(X,y)
-        ids = []
-        for i in range(0, len(results.cv_results_['rank_test_score'])):
-            ids.append(meth_id)
-        
-        results.cv_results_['method_ids']=ids
-        self.ranked = pd.DataFrame(results.cv_results_)
+        print 'Running a grid search (CV) with ' + str(self.method_str) + str('(' + str(meth_id) + ')') + '...'
+        meth_id = eval(meth_id)
 
-        #self.ranked = []
-        
+        if meth_id[2] in [1,2,4,7,8,10,11]:
+            start = time.time()
+            runner = GridSearchCV(self.clf, self.parameters, n_jobs=100, pre_dispatch=2*100)
+        else:
+            start = time.time()
+            runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
+        try:
+            results = runner.fit(X,y)
+            ids = []
+            for i in range(0, len(results.cv_results_['rank_test_score'])):
+                ids.append(str(meth_id))
 
-        if out == True:
+            results.cv_results_['method_ids']=ids
+            self.ranked = pd.DataFrame(results.cv_results_)
+            end = time.time()
+            print('Wall clock time: ' + str(end-start))
+        except:
+            runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
+            results = runner.fit(X, y)
+            ids = []
+            for i in range(0, len(results.cv_results_['rank_test_score'])):
+                ids.append(str(meth_id))
 
-            print 'Checking results...'
-        
-        #for i in range(0, len(results_table['rank_test_score'])):
-            #if results_table['rank_test_score'][i] < ranks:
-                #self.ranked.append(results_table.iloc[i,:])
+            results.cv_results_['method_ids'] = ids
+            self.ranked = pd.DataFrame(results.cv_results_)
+            end = time.time()
+            print('Wall clock time: ' + str(end - start))
 
-            
-        #self.ranked = pd.DataFrame(self.ranked)
-
-        if out == True:
-            
-            print 'Here are the top ' + str(ranks-1) + ' results!'
-            print ' '
-            pd.set_option('display.max_columns', 1000)
-            print pd.DataFrame(self.ranked).sort_values(by='rank_test_score')
-            pd.reset_option('display.max_columns')
-            
         return self.ranked
 
     def get_results(self):
