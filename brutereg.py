@@ -37,7 +37,7 @@ NOTES:
 
 def quality_filter(all_data, min_train_score, max_diff):
 
-    results = all_data.eval_results
+    results = all_data.results
 
     results.reset_index(drop=True, inplace=True)
 
