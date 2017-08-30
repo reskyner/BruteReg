@@ -67,3 +67,5 @@ I will add a script to calculate rdkit descriptors from SMILES strings in the fu
 1. A tested and deployable version of the sister analysis GUI (BruteSis)
 2. Scripts to calculate descriptors
 3. Scripts to scrape databases for experimental data
+4. Better deployment through a Docker image
+5. Support for windows
