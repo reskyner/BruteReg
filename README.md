@@ -42,9 +42,11 @@ This information can be displayed using brutereg -h:
 
 brutereg - Run a cross validated grid search of regression methods for an input set of predictors and descriptors
 
+
 SYNOPSIS: 
 
   usage: brutereg -i <input_file> -o <output_file> [-m <min_train_score> -d <max_train-test> -p <train_percentage>]
+  
 
 OPTIONS:
 
