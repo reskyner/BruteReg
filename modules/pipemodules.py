@@ -192,64 +192,81 @@ class search_random_forest(object):
             
         elif 1<= self.method_no <= 2:
                 param_grid = \
-                    {'n_estimators': range(10,70,15), \
-                     'criterion': ['mse', 'mae']}
+                    {'n_estimators': range(10, 110, 10),
+                     'max_features': ['auto', 'sqrt', 'log2'],
+                     'criterion': ['mse', 'mae'],
+                     #'min_samples_split': range(2, 50),
+                     #'min_samples_leaf': range(2, 50),
+                     'min_weight_fraction_leaf': np.arange(0.1, 0.6, 0.1),
+                     'bootstrap': ['False', 'True'],
+                     'oob_score': ['False', 'True']}
              
         elif self.method_no == 3:
                 param_grid = \
-                           {'fit_intercept': [True, False], \
+                           {'fit_intercept': [True, False],
                             'normalize': [True, False]}
 
 
         elif self.method_no == 4:
                 param_grid = \
-                           {'fit_intercept': [True, False], \
-                            'normalize': [True, False]}
+                           {'fit_intercept': [True, False],
+                            'normalize': [True, False],
+                            'alpha': range(0,105,5),
+                            'solver': ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']}
                 
         elif self.method_no == 5 :
                 param_grid = \
-                           {'alphas': range(0,100,1), \
-                            'fit_intercept': [True, False], \
-                            'normalize': [True, False]}
+                           {'alphas': range(0,101),
+                            'fit_intercept': [True, False],
+                            'normalize': [True, False],
+                            'cv': range(0,11),
+                            'gcv_mode': ['None', 'auto', 'svd', 'eigen']}
 
         elif self.method_no == 6 :
                 param_grid = \
-                           {'alpha': range(1,11,1), \
-                            'fit_intercept': [True, False], \
-                            'normalize': [True, False]}
+                           {'alpha': range(1,20),
+                            'fit_intercept': [True, False],
+                            'normalize': [True, False],
+                            'precompute': 'auto',
+                            'selection': ['cyclic', 'random']}
   
   
         elif self.method_no == 7:
                 param_grid = \
-                           {'n_alphas': range(10,560,50), \
-                            'fit_intercept': [True, False], \
-                            'normalize': [True, False]}
+                           {'n_alphas': range(10,500),
+                            'fit_intercept': [True, False],
+                            'normalize': [True, False],
+                            'precompute': 'auto',
+                            'cv': range(0, 10),
+                            'selection': ['random', 'cyclic']}
      
         elif self.method_no == 8:
                 param_grid = \
-                           {'max_n_alphas': range(500,2100,100), \
-                            'fit_intercept': [True, False], \
-                            'normalize': [True, False]}
+                           {'max_n_alphas': range(0,500),
+                            'fit_intercept': [True, False],
+                            'normalize': [True, False],
+                            'precompute': 'auto',
+                            'cv': range(0, 10)}
   
         elif self.method_no == 9:
                 param_grid = \
-                           {'criterion': ['aic', 'bic'], \
-                            'fit_intercept': [True, False], \
-                            'normalize': [True, False], \
-                            'positive': [True, False]}
+                           {'criterion': ['aic', 'bic'],
+                            'fit_intercept': [True, False],
+                            'normalize': [True, False],
+                            'precompute': 'auto'}
   
         elif self.method_no == 10:
                 param_grid = \
-                           {'alpha': range(-100,100, 10),\
-                            'l1_ratio': np.arange(0,1.2,0.2), \
-                            'fit_intercept': [True, False], \
+                           {'alpha': range(-100,100, 10),
+                            'l1_ratio': np.arange(0,1,0.1),
+                            'fit_intercept': [True, False],
                             'normalize': [True, False]}
  
         elif self.method_no == 11:
                 param_grid = \
-                           {'l1_ratio': np.arange(0.2,1.2,0.2),\
-                            'n_alphas': range(10,560,50), \
-                            'fit_intercept': [True, False], \
+                           {'l1_ratio': np.arange(0.1,1.1,0.1),
+                            'n_alphas': range(10,560,50),
+                            'fit_intercept': [True, False],
                             'normalize': [True, False]}
         elif self.method_no == 12:
             param_grid = \
@@ -266,7 +283,7 @@ class search_random_forest(object):
 
         if meth_id[2] in [1,2,4,7,8,10,11]:
             start = time.time()
-            runner = GridSearchCV(self.clf, self.parameters, n_jobs=100, pre_dispatch=2*100)
+            runner = GridSearchCV(self.clf, self.parameters, n_jobs=-1)
         else:
             start = time.time()
             runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)

@@ -101,6 +101,7 @@ Development: Currently only a default set of hyper-parameters are enabled...
                 except (KeyboardInterrupt, SystemExit):
                     raise
                 except:
+                    raise
                     print(str('The current method (id: ' + str(method_id) + ') has failed... Check hyperparameters\n'))
                     continue
 

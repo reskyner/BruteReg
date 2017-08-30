@@ -64,7 +64,6 @@ class project(object):
 
     def save_project(self, results, data_object, data_object2, method_object, filename):
 
-        check = os.path.exists(filename)
         print('Attempting to save to: ' + str(filename))
         def save():
             with open(filename, 'wb') as pickle_place:
@@ -74,20 +73,7 @@ class project(object):
                 pickle.dump(method_object, pickle_place)
                 print 'saving...'
 
-        while check == False:
-            save()
-            check = os.path.exists(filename)
-        else:
-            user_var = raw_input('File exists... overwrite? [y/n]')
-            if user_var == 'y' or user_var == 'n':
-                if user_var == 'y':
-                    save()
-                if user_var == 'n':
-                    new_filename = raw_input('Enter new filename: ')
-                    filename = new_filename
-                    save()
-            else:
-                user_var = raw_input('File exists... overwrite? [y/n]')
+        save()
 
         return self
 
