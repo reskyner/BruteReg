@@ -219,7 +219,7 @@ class search_random_forest(object):
                            {'alphas': range(0, 101),
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
-                            'cv': range(0,11),
+                            'cv': range(2,10),
                             'gcv_mode': ['None', 'auto', 'svd', 'eigen']}
 
         elif self.method_no == 6 :
@@ -242,11 +242,11 @@ class search_random_forest(object):
      
         elif self.method_no == 8:
                 param_grid = \
-                           {'max_n_alphas': range(0, 510, 10),
+                           {'max_n_alphas': range(0, 210, 10),
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
                             'precompute': [True, False],
-                            'cv': range(2, 10)}
+                            'cv': range(3, 10)}
   
         elif self.method_no == 9:
                 param_grid = \

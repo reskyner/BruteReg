@@ -12,7 +12,7 @@ import re
 import pandas as pd
 #from tqdm import tqdm
 
-def auto_grid(X, y, labels, train_percentage, ks=range(5,100,5), opts=[1,2,3,4,6,7,8,9,10,11,12]):
+def auto_grid(X, y, labels, train_percentage, ks=range(5,100,5), opts=[1,2,3,4,5,6,7,8,9,10,11,12]):
     """Run a grid search... auto_grid(X, y, labels, ks=range(10,100,10) opts=[1...12])
 -------------------------------------------------------------------------------
 Required: X - matrix of descriptors
