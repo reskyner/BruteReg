@@ -57,4 +57,8 @@ OPTIONS:
   -p (--train_percentage=) the percentage of the input data to use for training (default = 50)
   
  ## Example files ## 
- There are two example input .csv files in 
+ There are two example input .csv files in ./input_files. These are two datasets that I compiled suring my PhD, one for hydration free energies and one for solubility (values shown in the second column). The descriptors (columns two onwards) for each structure were calculated with rdkit from SMILES strings.I haven't included the SMILES strings for these datasets, as the structural information belongs to CCDC. The refcodes (column 1) refer to the refcodes used in the CSD (CCDC's database of small molecule crystal structures).
+
+Your own input files should follow the same format. A reference to the structure in the first column (this could be a smiles string or compound name, for example), the experimental value to be predicted in the second column, and descriptors in the following columns, with each structure having one row.
+
+I will add a script to calculate rdkit descriptors from SMILES strings in the future. I will also aim to add a number of scripts to scrape databases (e.g. ChEMBL) for experimental properties information, although this is currently not implemented.
