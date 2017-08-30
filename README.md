@@ -17,6 +17,8 @@ The program will produce 10's of thousands of models, depending on the number of
 ## Installation ##
 Requirements: Python 2.7, pip and virtualenv
 
+If you don't have root access and need to install locally, use something like anaconda (https://www.anaconda.com) as a python interpreter. Make sure that you are using the anaconda python executable rather than the system default version.
+
 For the time-being, this program has only been tested on Linux and Mac. To install, either download the full repository as a .zip file, or clone the repository with git. Next, run install_requirements.sh in your terminal. 
 
 Reccomended: use git clone so that you can automatically update by running update.sh (WARNING: This will erase any files that are not present in the git repository, so do not use the install directory as a working directory if you plan on updating this way!)
