@@ -156,9 +156,9 @@ def main(argv):
         elif opt in ("-o", "--output"):
             output_file = arg
         elif opt in ("-m", "--min_train_score"):
-            min_train_score = arg
+            min_train_score = float(arg)
         elif opt in ("-d", "--max_diff"):
-            max_diff = arg
+            max_diff = float(arg)
         elif opt in ("-p", "--train_percentage"):
             train_percentage = float(arg)
         elif opt in ("-e", "--estimators"):
@@ -172,6 +172,7 @@ def main(argv):
     if len(output_file) < 1:
         print('ERROR: Must specify an output file!')
         sys.exit()
+
     print USAGE
     print('The following estimator options were selected: ' + str(estimators) + '\n')
 
