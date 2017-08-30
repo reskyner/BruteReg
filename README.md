@@ -1,4 +1,4 @@
-# BruteReg - Brute-force Regression
+# BruteReg - Brute-force Regression (for cheminformatics)
 
 Author: Rachael Skyner
 
