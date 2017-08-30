@@ -1,8 +1,11 @@
 # BruteReg - Brute-force Regression
 
-Author: Rachael Skyner /n
-Contact: rachael.skyner@diamond.ac.uk /n
-Version: 0.1 (alpha)\n
+Author: Rachael Skyner
+
+Contact: rachael.skyner@diamond.ac.uk
+
+Version: 0.1 (alpha)
+
 
 ### Info ###
 This program was developed during my PhD, and was supported by funding from CCDC (https://www.ccdc.cam.ac.uk) 
