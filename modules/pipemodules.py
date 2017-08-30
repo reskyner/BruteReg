@@ -237,7 +237,7 @@ class search_random_forest(object):
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
                             'precompute': [True, False],
-                            'cv': range(0, 10),
+                            'cv': range(2, 10),
                             'selection': ['random', 'cyclic']}
      
         elif self.method_no == 8:
@@ -246,7 +246,7 @@ class search_random_forest(object):
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
                             'precompute': [True, False],
-                            'cv': range(0, 10)}
+                            'cv': range(2, 10)}
   
         elif self.method_no == 9:
                 param_grid = \
@@ -282,9 +282,15 @@ class search_random_forest(object):
         meth_id = eval(meth_id)
 
         if meth_id[2] in [1,2,4,8,10,11]:
-            start = time.time()
-            print('Parameter grid: ' + str(self.parameters))
-            runner = GridSearchCV(self.clf, self.parameters, n_jobs=-1)
+            try:
+                start = time.time()
+                print('Parameter grid: ' + str(self.parameters))
+                runner = GridSearchCV(self.clf, self.parameters, n_jobs=-1)
+            except:
+                print('parralel run failed, trying again...')
+                start = time.time()
+                print('Parameter grid: ' + str(self.parameters))
+                runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
         else:
             start = time.time()
             print('Parameter grid: ' + str(self.parameters))
