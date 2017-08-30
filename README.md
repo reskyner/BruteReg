@@ -56,6 +56,8 @@ OPTIONS:
   
   -p (--train_percentage=) the percentage of the input data to use for training (default = 50)
   
+  Parallelisation of jobs, where possible, is automated, so no extra options are required beyond your servers queue handling software. It is recommended that you run BruteReg on an HPC, as it is very slow on a local machine (more cores = more parallelisation)
+  
  ## Example files ## 
  There are two example input .csv files in ./input_files. These are two datasets that I compiled suring my PhD, one for hydration free energies and one for solubility (values shown in the second column). The descriptors (columns two onwards) for each structure were calculated with rdkit from SMILES strings.I haven't included the SMILES strings for these datasets, as the structural information belongs to CCDC. The refcodes (column 1) refer to the refcodes used in the CSD (CCDC's database of small molecule crystal structures).
 
