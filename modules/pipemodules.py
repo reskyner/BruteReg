@@ -280,7 +280,7 @@ class search_random_forest(object):
         print 'Running a grid search (CV) with ' + str(self.method_str) + str('(' + str(meth_id) + ')') + '...'
         meth_id = eval(meth_id)
 
-        if meth_id[2] in [1,2,4,8,10,11]:
+        if meth_id[2] in [1,2,4,5,7,8,10,11]:
             try:
                 start = time.time()
                 print('Parameter grid: ' + str(self.parameters))
