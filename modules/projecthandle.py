@@ -2,9 +2,8 @@
 # coding=utf8
 
 import pickle
-import os.path
 import pandas as pd
-#import projecthandle as proj
+
 
 class input_object(object):
     def __init__(self):

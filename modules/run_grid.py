@@ -1,16 +1,14 @@
 #!/usr/bin/python
 # coding=utf8
 
-import sys, os
-sys.path.append('/usr/local/lib/python2.7/site-packages')
+import sys
+#sys.path.append('/usr/local/lib/python2.7/site-packages')
 sys.path.append('./modules')
 
 import pipemodules as pm
-#import projecthandle as proj
 import numpy as np
 import re
 import pandas as pd
-#from tqdm import tqdm
 
 def auto_grid(X, y, labels, train_percentage, ks=range(5,100,5), opts=[1,2,3,4,5,6,7,8,9,10,11,12]):
     """Run a grid search... auto_grid(X, y, labels, ks=range(10,100,10) opts=[1...12])

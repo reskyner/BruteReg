@@ -12,7 +12,6 @@ from sklearn.model_selection import GridSearchCV
 
 from sklearn.feature_selection import f_regression, mutual_info_regression
 import numpy as np
-import sklearn.metrics as metrics
 from sklearn import linear_model
 from sklearn import ensemble
 from sklearn import svm
@@ -216,7 +215,7 @@ class search_random_forest(object):
                 
         elif self.method_no == 5 :
                 param_grid = \
-                           {'alphas': range(0, 101),
+                           {'alphas': [tuple(range(0,11,1)), tuple(range(0,105,5))],
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
                             'cv': range(2,10),
@@ -233,7 +232,7 @@ class search_random_forest(object):
   
         elif self.method_no == 7:
                 param_grid = \
-                           {'n_alphas': range(10, 210, 10),
+                           {'n_alphas': range(2, 20, 1),
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
                             'precompute': [True, False],
@@ -242,10 +241,10 @@ class search_random_forest(object):
      
         elif self.method_no == 8:
                 param_grid = \
-                           {'max_n_alphas': range(0, 210, 10),
+                           {'max_n_alphas': range(3, 210, 10),
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
-                            'precompute': [True, False],
+                            #'precompute': [True, False],
                             'cv': range(3, 10)}
   
         elif self.method_no == 9:
