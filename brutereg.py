@@ -120,16 +120,6 @@ def quality_filter(all_data, min_train_score, max_diff):
     
     return analysis_set
 
-def save_eval(filename, all_data):
-    devobj = proj.input_object()
-    evalobj = proj.input_object()
-    methobj = proj.method_object()
-    projectobj = proj.project()
-    devobj.create_object(all_data.X_train, all_data.Y_train, all_data.descriptor_matrix_train)
-    evalobj.create_object(all_data.X_test, all_data.Y_test, all_data.descriptor_matrix_test)
-    methobj.create_object(all_data.k_vals, all_data.selection_labels, all_data.ind_values, all_data.options)
-    projectobj.save_project(all_data.results, devobj, evalobj, methobj, filename)
-
 
 def main(argv):
     # set
