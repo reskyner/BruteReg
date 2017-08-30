@@ -58,7 +58,7 @@ Development: Currently only a default set of hyper-parameters are enabled...
     results = []
 
     ## For the number of selection labels
-    print('Starting grid search step...')
+    print('Starting grid search step...\n')
     for j in range(0,len(all_data.selection_labels)):
         for k in range(0,len(all_data.selection_labels[j])):
 
