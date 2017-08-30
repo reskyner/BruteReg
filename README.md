@@ -62,3 +62,8 @@ OPTIONS:
 Your own input files should follow the same format. A reference to the structure in the first column (this could be a smiles string or compound name, for example), the experimental value to be predicted in the second column, and descriptors in the following columns, with each structure having one row.
 
 I will add a script to calculate rdkit descriptors from SMILES strings in the future. I will also aim to add a number of scripts to scrape databases (e.g. ChEMBL) for experimental properties information, although this is currently not implemented.
+
+## Coming soon... ##
+1. A tested and deployable version of the sister analysis GUI (BruteSis)
+2. Scripts to calculate descriptors
+3. Scripts to scrape databases for experimental data
