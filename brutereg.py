@@ -21,15 +21,16 @@ brutereg.py - Run a cross validated grid search of regression methods for an inp
 
 SYNOPSIS: 
 
-  usage: brutereg.py -i <input_file> -o <output_file> [-mt <min_train_score> -md <max_train-test>]
+  usage: brutereg.py -i <input_file> -o <output_file> [-m <min_train_score> -d <max_train-test> -p <train_percentage>]
 
 OPTIONS:
 
   -i (--input=)           an input .csv file:- c1=reference c2=predictor c2-cn=descriptors
   -o (--output=)          an output pickle file containing the results of brutereg, which can be analysed with BruteSis
-  -m (--min_train_score=) minimum R**2 score of training sets to keep models for
-  -d (--max_diff=)        max difference between R**2 of training and test sets to keep models for
-
+  -m (--min_train_score=) minimum R**2 score of training sets to keep models for (default = 0.75)
+  -d (--max_diff=)        max difference between R**2 of training and test sets to keep models for (default = 0.15)
+  -p (--train_percentage) the percentage of the input data to use for training (default = 50)
+ 
 NOTES:
 
 """

@@ -211,12 +211,12 @@ class search_random_forest(object):
                 param_grid = \
                            {'fit_intercept': [True, False],
                             'normalize': [True, False],
-                            'alpha': range(0,105,5),
+                            'alpha': range(0, 105, 5),
                             'solver': ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']}
                 
         elif self.method_no == 5 :
                 param_grid = \
-                           {'alphas': range(0,101),
+                           {'alphas': range(0, 101),
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
                             'cv': range(0,11),
@@ -224,28 +224,28 @@ class search_random_forest(object):
 
         elif self.method_no == 6 :
                 param_grid = \
-                           {'alpha': range(1,20),
+                           {'alpha': range(1, 20),
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
-                            'precompute': 'auto',
+                            'precompute': [True, False],
                             'selection': ['cyclic', 'random']}
   
   
         elif self.method_no == 7:
                 param_grid = \
-                           {'n_alphas': range(10,500),
+                           {'n_alphas': range(10, 210, 10),
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
-                            'precompute': 'auto',
+                            'precompute': [True, False],
                             'cv': range(0, 10),
                             'selection': ['random', 'cyclic']}
      
         elif self.method_no == 8:
                 param_grid = \
-                           {'max_n_alphas': range(0,500),
+                           {'max_n_alphas': range(0, 510, 10),
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
-                            'precompute': 'auto',
+                            'precompute': [True, False],
                             'cv': range(0, 10)}
   
         elif self.method_no == 9:
@@ -253,24 +253,24 @@ class search_random_forest(object):
                            {'criterion': ['aic', 'bic'],
                             'fit_intercept': [True, False],
                             'normalize': [True, False],
-                            'precompute': 'auto'}
+                            'precompute': [True, False]}
   
         elif self.method_no == 10:
                 param_grid = \
-                           {'alpha': range(-100,100, 10),
+                           {'alpha': range(-100, 100, 10),
                             'l1_ratio': np.arange(0,1,0.1),
                             'fit_intercept': [True, False],
                             'normalize': [True, False]}
  
         elif self.method_no == 11:
                 param_grid = \
-                           {'l1_ratio': np.arange(0.1,1.1,0.1),
-                            'n_alphas': range(10,560,50),
+                           {'l1_ratio': np.arange(0.1, 1.1, 0.1),
+                            'n_alphas': range(10, 560, 50),
                             'fit_intercept': [True, False],
                             'normalize': [True, False]}
         elif self.method_no == 12:
             param_grid = \
-                       {'C': np.arange(0.1,1,0.05)}
+                       {'C': np.arange(0.1, 1, 0.05)}
 
         self.parameters = param_grid
         return self.parameters
@@ -281,11 +281,13 @@ class search_random_forest(object):
         print 'Running a grid search (CV) with ' + str(self.method_str) + str('(' + str(meth_id) + ')') + '...'
         meth_id = eval(meth_id)
 
-        if meth_id[2] in [1,2,4,7,8,10,11]:
+        if meth_id[2] in [1,2,4,8,10,11]:
             start = time.time()
+            print('Parameter grid: ' + str(self.parameters))
             runner = GridSearchCV(self.clf, self.parameters, n_jobs=-1)
         else:
             start = time.time()
+            print('Parameter grid: ' + str(self.parameters))
             runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
         try:
             results = runner.fit(X,y)
@@ -298,6 +300,7 @@ class search_random_forest(object):
             end = time.time()
             print('Wall clock time: ' + str(end-start))
         except:
+            print('Parameter grid: ' + str(self.parameters))
             runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
             results = runner.fit(X, y)
             ids = []
