@@ -56,7 +56,24 @@ OPTIONS:
   
   -d (--max_diff=)        max difference between R**2 of training and test sets to keep models for (default = 0.15)
   
-  -p (--train_percentage=) the percentage of the input data to use for training (default = 50)
+  -p (--train_percentage) the percentage of the input data to use for training (default = 50)
+  
+  -e (--estimators)       the estimators to use, as a list of numbers (e.g. [1,2,3] default=[1,2,3,4,5,6,7,8,9,10,11,12])
+  
+      Estimator options:
+      -----------------
+      1: Random forest
+      2: Extra random trees
+      3: Simple OLS linear regression
+      4: Ridge regression
+      5: Ridge regression with cross validation (CV)
+      6: Lasso (Least Absolute Shrinkage Selection Operator) regression
+      7: Lasso with CV
+      8: Lasso with least angle regression (lars) & CV
+      9: Lasso lars with information criterion (IC) - AIC/BIC
+      10: Elastic net regression
+      11: Elastic net with CV
+      12: Linear support vector regression
   
   Parallelisation of jobs, where possible, is automated, so no extra options are required beyond your servers queue handling software. It is recommended that you run BruteReg on an HPC, as it is very slow on a local machine (more cores = more parallelisation)
   
