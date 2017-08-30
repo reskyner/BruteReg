@@ -21,6 +21,8 @@ For the time-being, this program has only been tested on Linux and Mac. To insta
 repository as a .zip file, or clone the repository with git. Next, run install_requirements.sh in your
 terminal. 
 
+Reccomended: use git clone so that you can automatically update by running update.sh (WARNING: This will erase any files that are not present in the git repository, so do not use the install directory as a working directory if you plan on updating this way!)
+
 Quick explanation of install:
 1. A virtualenv of the program is created to isolate it from your machines python install - this is so that you
 can install additional packages in a separate environment, which is useful if you don't have root access. 
