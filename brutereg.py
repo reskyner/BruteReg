@@ -1,4 +1,5 @@
 import sys, getopt, os
+import argparse
 #sys.path.append('/usr/local/lib/python2.7/site-packages')
 sys.path.append('./modules')
 
@@ -30,8 +31,22 @@ OPTIONS:
   -m (--min_train_score=) minimum R**2 score of training sets to keep models for (default = 0.75)
   -d (--max_diff=)        max difference between R**2 of training and test sets to keep models for (default = 0.15)
   -p (--train_percentage) the percentage of the input data to use for training (default = 50)
- 
-NOTES:
+  -e (--estimators)       the estimators to use, as a list of numbers (e.g. [1,2,3] default=[1,2,3,4,5,6,7,8,9,10,11,12])
+  
+      Estimator options:
+      -----------------
+      1: Random forest
+      2: Extra random trees
+      3: Simple OLS linear regression
+      4: Ridge regression
+      5: Ridge regression with cross validation (CV)
+      6: Lasso (Least Absolute Shrinkage Selection Operator) regression
+      7: Lasso with CV
+      8: Lasso with least angle regression (lars) & CV
+      9: Lasso lars with information criterion (IC) - AIC/BIC
+      10: Elastic net regression
+      11: Elastic net with CV
+      12: Linear support vector regression
 
 """
 
@@ -123,11 +138,14 @@ def main(argv):
     min_train_score = 0.75
     max_diff = 0.15
     train_percentage = 50
+    estimators = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     try:
-        opts, args = getopt.getopt(argv,"hi:o:mdp",["input=", "output=", "min_train_score=", "max_diff=",
-                                                    "train_percentage="])
+        opts, args = getopt.getopt(argv,"hi:o:m:d:p:e:",["help", "input", "output", "min_train_score", "max_diff",
+                                                    "train_percentage", "estimators"])
+
     except getopt.GetoptError:
         print USAGE
+        raise
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
@@ -142,7 +160,10 @@ def main(argv):
         elif opt in ("-d", "--max_diff"):
             max_diff = arg
         elif opt in ("-p", "--train_percentage"):
-            train_percentage = arg
+            train_percentage = float(arg)
+        elif opt in ("-e", "--estimators"):
+            estimators = eval(arg)
+
 
     if len(input_file) < 1 :
         print('ERROR: Must specify an input file!')
@@ -151,6 +172,8 @@ def main(argv):
     if len(output_file) < 1:
         print('ERROR: Must specify an output file!')
         sys.exit()
+    print USAGE
+    print('The following estimator options were selected: ' + str(estimators) + '\n')
 
     print('**********************************************************************************\n')
     print('Running BruteReg on: ' + str(input_file))
@@ -160,7 +183,8 @@ def main(argv):
     print('Separating data from input for grid search...')
     X,y,labels = proj.set_input(str(input_file))
     print('Running grid search. Please note this will take a hell of a long time!')
-    results = rg.auto_grid(X, y, labels, train_percentage)
+
+    results = rg.auto_grid(X, y, labels, train_percentage, estimators)
 
 
     proj.save_eval(str(output_file), results)

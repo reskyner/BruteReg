@@ -33,7 +33,7 @@ class preprocess(object):
         ## Randomly split the data in half for train and test sets
         temp = random.sample(xrange(0, len(X2)), len(X2)) # generate a random order of numbers for the length of the data
         half_length = int(round((float(len(X2)) / 100) * float(train_percentage)))
-        print('Using ' + str(half_length) + ' datapoints (' + str(train_percentage) + '%) for training set')
+        print('\nUsing ' + str(half_length) + ' datapoints (' + str(train_percentage) + '%) for training set\n')
         train_ind = temp[0:half_length] # first half of random numbers for training
         test_ind = temp[half_length:] # second half of random numbers for testing
 
