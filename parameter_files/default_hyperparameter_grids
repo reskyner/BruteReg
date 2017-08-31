@@ -1,0 +1,114 @@
+# DEFAULT HYPER-PARAMETERS
+# Author: Rachael Skyner
+# e-mail: rachael.skyner@diamond.ac.uk
+
+# This is an example hyper-parameter file, containing the defaults that are run in BruteReg
+# For each method, represented by a number, according to the numbers printed out at the beginning
+# of the BruteReg run, or the brutereg -h command.
+#
+# The parameter grids should be specified as below, with a { followed by a newline, with each dictionary option
+# (e.g. 'string':[options]) referring to an array of hyperparameters to use in the gridsearch. - see paramgrid option:
+# http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html
+#
+# For info about which hyperparameters can be used, look at the scikit-learn page for that estimator
+
+# Any lines CONTAINING a # will be ignored
+
+method = 1
+{
+'n_estimators': range(10, 110, 10)
+'max_features': ['auto', 'sqrt', 'log2']
+'criterion': ['mse', 'mae']
+'min_weight_fraction_leaf': np.arange(0.1, 0.6, 0.1)
+'bootstrap': ['False', 'True']
+'oob_score': ['False', 'True']
+}
+
+method = 2
+{
+'n_estimators': range(10, 110, 10)
+'max_features': ['auto', 'sqrt', 'log2']
+'criterion': ['mse', 'mae']
+'min_weight_fraction_leaf': np.arange(0.1, 0.6, 0.1)
+'bootstrap': ['False', 'True']
+'oob_score': ['False', 'True']
+}
+
+method = 3
+{
+'fit_intercept': [True, False]
+'normalize': [True, False]
+}
+
+method = 4
+{
+'fit_intercept': [True, False],
+'normalize': [True, False],
+'alpha': range(0, 105, 5),
+'solver': ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']
+}
+
+method = 5
+{
+'alphas': [tuple(range(0,11,1)), tuple(range(0,105,5))],
+'fit_intercept': [True, False],
+'normalize': [True, False],
+'cv': range(2,10),
+'gcv_mode': ['None', 'auto', 'svd', 'eigen']
+}
+
+method = 6
+{
+'alpha': range(1, 20),
+'fit_intercept': [True, False],
+'normalize': [True, False],
+'precompute': [True, False],
+'selection': ['cyclic', 'random']
+}
+
+method = 7
+{
+'n_alphas': range(2, 20, 1),
+'fit_intercept': [True, False],
+'normalize': [True, False],
+'precompute': [True, False],
+'cv': range(2, 10),
+'selection': ['random', 'cyclic']
+}
+
+method = 8
+{
+'max_n_alphas': range(3, 210, 10),
+'fit_intercept': [True, False],
+'normalize': [True, False],
+'cv': range(3, 10)
+}
+
+method = 9
+{
+'criterion': ['aic', 'bic'],
+'fit_intercept': [True, False],
+'normalize': [True, False],
+'precompute': [True, False]
+}
+
+method = 10
+{
+'alpha': range(-100, 100, 10),
+'l1_ratio': np.arange(0,1,0.1),
+'fit_intercept': [True, False],
+'normalize': [True, False]
+}
+
+method = 11
+{
+'l1_ratio': np.arange(0.1, 1.1, 0.1),
+'n_alphas': range(10, 560, 50),
+'fit_intercept': [True, False],
+'normalize': [True, False]
+}
+
+method = 12
+{
+'C': np.arange(0.1, 1, 0.05)
+}

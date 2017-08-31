@@ -1,3 +1,4 @@
+pip install 'virtualenv'
 virtualenv ../BruteReg
 source bin/activate
 pip install 'matplotlib>=1.3.1'

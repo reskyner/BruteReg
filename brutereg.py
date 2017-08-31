@@ -11,6 +11,7 @@ import numpy as np
 import projecthandle as proj
 import run_grid as rg
 
+
 ## suppress all warnings - will stop stupid convergence thing - consider revising
 # todo: figure out which models auto throw warning (e.g. alpha=0 warning)
 import warnings
@@ -22,16 +23,18 @@ brutereg.py - Run a cross validated grid search of regression methods for an inp
 
 SYNOPSIS: 
 
-  usage: brutereg.py -i <input_file> -o <output_file> [-m <min_train_score> -d <max_train-test> -p <train_percentage>]
+  usage: brutereg.py -i <input_file> -o <output_file> [options]
 
 OPTIONS:
 
+  -h (--help)             display this message
   -i (--input=)           an input .csv file:- c1=reference c2=predictor c2-cn=descriptors
   -o (--output=)          an output pickle file containing the results of brutereg, which can be analysed with BruteSis
   -m (--min_train_score=) minimum R**2 score of training sets to keep models for (default = 0.75)
   -d (--max_diff=)        max difference between R**2 of training and test sets to keep models for (default = 0.15)
   -p (--train_percentage) the percentage of the input data to use for training (default = 50)
-  -e (--estimators)       the estimators to use, as a list of numbers (e.g. [1,2,3] default=[1,2,3,4,5,6,7,8,9,10,11,12])
+  -e (--estimators)       the estimators to use, as a list of numbers (e.g. [1,2,3] default = [1,2,3,4,5,6,7,8,9,10,11,12])
+  -u (--hyperparameters)  input file for hyperparameters (default = './parameter_files/default_hyperparameter_grids')
   
       Estimator options:
       -----------------
@@ -129,9 +132,10 @@ def main(argv):
     max_diff = 0.15
     train_percentage = 50
     estimators = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    input_params = './parameter_files/default_hyperparameter_grids'
     try:
-        opts, args = getopt.getopt(argv,"hi:o:m:d:p:e:",["help", "input", "output", "min_train_score", "max_diff",
-                                                    "train_percentage", "estimators"])
+        opts, args = getopt.getopt(argv,"hi:o:m:d:p:e:u:",["help", "input", "output", "min_train_score", "max_diff",
+                                                    "train_percentage", "estimators", "hyperparameters"])
 
     except getopt.GetoptError:
         print USAGE
@@ -153,6 +157,8 @@ def main(argv):
             train_percentage = float(arg)
         elif opt in ("-e", "--estimators"):
             estimators = eval(arg)
+        elif opt in ("-u", "--hyperparameters"):
+            input_params = arg
 
 
     if len(input_file) < 1 :
@@ -175,7 +181,7 @@ def main(argv):
     X,y,labels = proj.set_input(str(input_file))
     print('Running grid search. Please note this will take a hell of a long time!')
 
-    results = rg.auto_grid(X, y, labels, train_percentage, estimators)
+    results = rg.auto_grid(X, y, labels, train_percentage, estimators, input_params)
 
 
     proj.save_eval(str(output_file), results)

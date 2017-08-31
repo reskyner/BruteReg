@@ -1,9 +1,7 @@
-#!/usr/bin/python
-# coding=utf8
-
 import time
 import sys
-sys.path.append('/usr/local/lib/python2.7/site-packages')
+import re
+#sys.path.append('/usr/local/lib/python2.7/site-packages')
 
 import pandas as pd
 from sklearn import feature_selection
@@ -182,96 +180,57 @@ class search_random_forest(object):
 
         return self.method_str, self.clf, self.method_no
 
+    def read_method_paramgrid(self, input_file, method_in):
 
-    def set_parameters(self, *param_grid):
-        """ set_params(param_grid) param_grid = dictionary of paramaters or none for default options"""
-        self.parameters = []
-        if param_grid:
-            self.parameters = param_grid
-            
-        elif 1<= self.method_no <= 2:
-                param_grid = \
-                    {'n_estimators': range(10, 110, 10),
-                     'max_features': ['auto', 'sqrt', 'log2'],
-                     'criterion': ['mse', 'mae'],
-                     #'min_samples_split': range(2, 50),
-                     #'min_samples_leaf': range(2, 50),
-                     'min_weight_fraction_leaf': np.arange(0.1, 0.6, 0.1),
-                     'bootstrap': ['False', 'True'],
-                     'oob_score': ['False', 'True']}
-             
-        elif self.method_no == 3:
-                param_grid = \
-                           {'fit_intercept': [True, False],
-                            'normalize': [True, False]}
+        full_method_string = re.compile(str('method\s*=\s*') + str(method_in))
+        method_string = re.compile('method\s*=\s*')
+        parameter_file = open(input_file, 'r').readlines()
 
+        string = []
 
-        elif self.method_no == 4:
-                param_grid = \
-                           {'fit_intercept': [True, False],
-                            'normalize': [True, False],
-                            'alpha': range(0, 105, 5),
-                            'solver': ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']}
-                
-        elif self.method_no == 5 :
-                param_grid = \
-                           {'alphas': [tuple(range(0,11,1)), tuple(range(0,105,5))],
-                            'fit_intercept': [True, False],
-                            'normalize': [True, False],
-                            'cv': range(2,10),
-                            'gcv_mode': ['None', 'auto', 'svd', 'eigen']}
+        line_no = 0
+        line_2_no = 0
 
-        elif self.method_no == 6 :
-                param_grid = \
-                           {'alpha': range(1, 20),
-                            'fit_intercept': [True, False],
-                            'normalize': [True, False],
-                            'precompute': [True, False],
-                            'selection': ['cyclic', 'random']}
-  
-  
-        elif self.method_no == 7:
-                param_grid = \
-                           {'n_alphas': range(2, 20, 1),
-                            'fit_intercept': [True, False],
-                            'normalize': [True, False],
-                            'precompute': [True, False],
-                            'cv': range(2, 10),
-                            'selection': ['random', 'cyclic']}
-     
-        elif self.method_no == 8:
-                param_grid = \
-                           {'max_n_alphas': range(3, 210, 10),
-                            'fit_intercept': [True, False],
-                            'normalize': [True, False],
-                            #'precompute': [True, False],
-                            'cv': range(3, 10)}
-  
-        elif self.method_no == 9:
-                param_grid = \
-                           {'criterion': ['aic', 'bic'],
-                            'fit_intercept': [True, False],
-                            'normalize': [True, False],
-                            'precompute': [True, False]}
-  
-        elif self.method_no == 10:
-                param_grid = \
-                           {'alpha': range(-100, 100, 10),
-                            'l1_ratio': np.arange(0,1,0.1),
-                            'fit_intercept': [True, False],
-                            'normalize': [True, False]}
- 
-        elif self.method_no == 11:
-                param_grid = \
-                           {'l1_ratio': np.arange(0.1, 1.1, 0.1),
-                            'n_alphas': range(10, 560, 50),
-                            'fit_intercept': [True, False],
-                            'normalize': [True, False]}
-        elif self.method_no == 12:
-            param_grid = \
-                       {'C': np.arange(0.1, 1, 0.05)}
+        parsing = False
+        for line in parameter_file:
+            line_no += 1
+            if '#' in line:
+                continue
 
-        self.parameters = param_grid
+            if re.search(full_method_string, line):
+                string = []
+                if int(re.sub(method_string, '', line))==method_in:
+                    hit = True
+                else:
+                    hit = False
+            else:
+                hit = False
+
+            if hit:
+                for line in parameter_file:
+                    line_2_no += 1
+
+                    if line_2_no < line_no:
+                        continue
+
+                    if '{' in line:
+                        parameter_grid = {}
+                        parsing = True
+
+                    if '}' in line:
+                        parsing = False
+                        final_grid = parameter_grid  ## parameter grid fully assigned at this point, so do parameter grid here
+                        hit = False
+                        break
+
+                    if parsing:
+                        if '{' not in line:
+                            string.append(line.replace('\n', ''))
+
+                    for i in string:
+                        eval(str('parameter_grid.update({' + str(i) + '})'))
+
+        self.parameters = final_grid
         return self.parameters
 
 

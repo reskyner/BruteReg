@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# coding=utf8
-
 import sys
 #sys.path.append('/usr/local/lib/python2.7/site-packages')
 sys.path.append('./modules')
@@ -10,7 +7,7 @@ import numpy as np
 import re
 import pandas as pd
 
-def auto_grid(X, y, labels, train_percentage, opts, ks=range(5,100,5)):
+def auto_grid(X, y, labels, train_percentage, opts, input_params, ks=range(5,100,5)):
     """Run a grid search... auto_grid(X, y, labels, ks=range(10,100,10) opts=[1...12])
 -------------------------------------------------------------------------------
 Required: X - matrix of descriptors
@@ -70,14 +67,12 @@ Development: Currently only a default set of hyper-parameters are enabled...
             for i in all_data.options:
 
                 try:
-
-                    # Set up method calculation object parameters
                     method_id = str([j,k,i])
                     # print('Setting up model with index: ' + method_id)
                     grid_search = pm.search_random_forest()
                     grid_search.set_method(i)
-                    
-                    grid_search.set_parameters()
+
+                    grid_search.read_method_paramgrid(input_params, i)
 
                     # run current method
                     # print('Running grid search for current method...')
