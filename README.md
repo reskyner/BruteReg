@@ -44,23 +44,27 @@ brutereg - Run a cross validated grid search of regression methods for an input 
 
 SYNOPSIS: 
 
-   usage: brutereg -i <input_file> -o <output_file> [-m <min_train_score> -d <max_train-test> -p <train_percentage>]
+  usage: brutereg.py -i <input_file> -o <output_file> [options]
   
 
 OPTIONS:
 
-   -i (--input=)           an input .csv file:- c1=reference c2=predictor c2-cn=descriptors
-   
-   -o (--output=)          an output pickle file containing the results of brutereg, which can be analysed with BruteSis
-   
-   -m (--min_train_score=) minimum R squared score of training sets to keep models for (default = 0.75)
-   
-   -d (--max_diff=)        max difference between R squared of training and test sets to keep models for (default = 0.15)
-   
-   -p (--train_percentage) the percentage of the input data to use for training (default = 50)
-   
-   -e (--estimators)       the estimators to use, as a list of numbers (e.g. [1,2,3] default=[1,2,3,4,5,6,7,8,9,10,11,12])
-   
+  -h (--help)             display this message
+  
+  -i (--input=)           an input .csv file:- c1=reference c2=predictor c2-cn=descriptors
+  
+  -o (--output=)          an output pickle file containing the results of brutereg, which can be analysed with BruteSis
+  
+  -m (--min_train_score=) minimum R squared score of training sets to keep models for (default = 0.75)
+  
+  -d (--max_diff=)        max difference between R squared of training and test sets to keep models for (default = 0.15)
+  
+  -p (--train_percentage) the percentage of the input data to use for training (default = 50)
+  
+  -e (--estimators)       the estimators to use, as a list of numbers (e.g. [1,2,3] default = [1,2,3,4,5,6,7,8,9,10,11,12])
+  
+  -u (--hyperparameters)  input file for hyperparameters (default = './parameter_files/default_hyperparameter_grids')
+  
   
       Estimator options:
       -----------------
