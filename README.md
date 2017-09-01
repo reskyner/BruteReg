@@ -95,7 +95,7 @@ I will add a script to calculate rdkit descriptors from SMILES strings in the fu
 
    To run:
 
-   python descriptor_calc.py -i <input_file> -o <name_for_output>
+   python descriptor_calc.py -i <input_file> -o <output_file>
 
 ## Coming soon... ##
 1. A tested and deployable version of the sister analysis GUI (BruteSis)
