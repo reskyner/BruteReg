@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/reskyner/BruteReg.svg)](https://travis-ci.org/reskyner/BruteReg)
+
 # BruteReg - Brute-force Regression (for cheminformatics)
 
 Author: Rachael Skyner
