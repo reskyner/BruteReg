@@ -93,9 +93,9 @@ I will add a script to calculate rdkit descriptors from SMILES strings in the fu
 ## Additional scripts ##
 1. A script to calculate rdkit descriptors for an input csv file, with the column headings Refcode and Smiles, containing the smiles strings for the compounds (identified by a refcode - which can be anything) you wish to work with. This script is located in ./calculate descriptors. 
 
-To run:
+   To run:
 
-python descriptor_calc.py -i <input file> -o <name_for_output>
+   python descriptor_calc.py -i <input_file> -o <name_for_output>
 
 ## Coming soon... ##
 1. A tested and deployable version of the sister analysis GUI (BruteSis)
