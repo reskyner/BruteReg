@@ -1,3 +1,5 @@
+https://travis-ci.org/reskyner/BruteReg.svg?branch=master
+
 # BruteReg - Brute-force Regression (for cheminformatics)
 
 Author: Rachael Skyner
