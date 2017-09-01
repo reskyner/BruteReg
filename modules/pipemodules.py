@@ -133,46 +133,57 @@ class search_random_forest(object):
             self.method_str = 'RandomForestRegressor'
             self.method_no = 1
             self.clf = ensemble.RandomForestRegressor()
+
         elif method == 2:
             self.method_str = 'ExtraTreesRegressor'
             self.method_no = 2
             self.clf = ensemble.ExtraTreesRegressor()
+
         elif method == 3:
             self.method_str = 'LinearRegression'
             self.method_no = 3
             self.clf = linear_model.LinearRegression()
+
         elif method == 4:
             self.method_str = 'Ridge'
             self.method_no = 4
             self.clf = linear_model.Ridge()
+
         elif method == 5:
             self.method_str = 'RidgeCV'
             self.method_no = 5
             self.clf = linear_model.RidgeCV()
+
         elif method == 6:
             self.method_str = 'Lasso'
             self.method_no = 6
             self.clf = linear_model.Lasso()
+
         elif method == 7:
             self.method_str = 'LassoCV'
             self.method_no = 7
             self.clf = linear_model.LassoCV()
+
         elif method == 8:
             self.method_str = 'LassoLarsCV'
             self.method_no = 8
             self.clf = linear_model.LassoLarsCV()
+
         elif method == 9:
             self.method_str = 'LassoLarsIC'
             self.method_no = 9
             self.clf = linear_model.LassoLarsIC()
+
         elif method == 10:
             self.method_str = 'ElasticNet'
             self.method_no = 10
             self.clf = linear_model.ElasticNet()
+
         elif method == 11:
             self.method_str = 'ElasticNetCV'
             self.method_no = 11
             self.clf = linear_model.ElasticNetCV()
+
         elif method == 12:
             self.method_str = 'svr'
             self.method_no = 12
@@ -199,7 +210,7 @@ class search_random_forest(object):
 
             if re.search(full_method_string, line):
                 string = []
-                if int(re.sub(method_string, '', line))==method_in:
+                if int(re.sub(method_string, '', line)) == method_in:
                     hit = True
                 else:
                     hit = False
@@ -219,7 +230,7 @@ class search_random_forest(object):
 
                     if '}' in line:
                         parsing = False
-                        final_grid = parameter_grid  ## parameter grid fully assigned at this point, so do parameter grid here
+                        final_grid = parameter_grid
                         hit = False
                         break
 

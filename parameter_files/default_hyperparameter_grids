@@ -53,7 +53,7 @@ method = 5
 'alphas': [tuple(range(0,11,1)), tuple(range(0,105,5))],
 'fit_intercept': [True, False],
 'normalize': [True, False],
-'cv': range(2,10),
+'cv': range(2,11),
 'gcv_mode': ['None', 'auto', 'svd', 'eigen']
 }
 
@@ -81,7 +81,7 @@ method = 8
 'max_n_alphas': range(3, 210, 10),
 'fit_intercept': [True, False],
 'normalize': [True, False],
-'cv': range(3, 10)
+'cv': range(3, 11)
 }
 
 method = 9
@@ -110,5 +110,9 @@ method = 11
 
 method = 12
 {
-'C': np.arange(0.1, 1, 0.05)
+'C': np.arange(0.1, 1, 0.05),
+'loss': ['epsilon_insensitive', 'squared_epsilon_insensitive'],
+'epsilon': np.arange(0, 1.1, 0.1),
+'dual': [True, False],
+'fit_intercept': [True, False]
 }

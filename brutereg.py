@@ -1,20 +1,17 @@
-import sys, getopt, os
-import argparse
-#sys.path.append('/usr/local/lib/python2.7/site-packages')
-sys.path.append('./modules')
+import sys, getopt
+import warnings
 
 from sklearn import metrics
 import pandas as pd
 import numpy as np
 
-## import modules to build pipelines
 import projecthandle as proj
 import run_grid as rg
 
+sys.path.append('./modules')
 
 ## suppress all warnings - will stop stupid convergence thing - consider revising
 # todo: figure out which models auto throw warning (e.g. alpha=0 warning)
-import warnings
 warnings.filterwarnings("ignore")
 
 # todo: write full notes section
@@ -85,7 +82,6 @@ def quality_filter(all_data, min_train_score, max_diff):
     method_ids = []
     parameters = []
 
-
     for i in range(0,len(results)):
         ## take method_ids and build estimator for current method
 
@@ -109,7 +105,6 @@ def quality_filter(all_data, min_train_score, max_diff):
                           'eval_evs':eval_evs, 'dev_mae':dev_mae, 'eval_mae':eval_mae,
                           'dev_mse': dev_mse, 'eval_mse':eval_mse, 'dev_median_ae':dev_medae,
                           'eval_median_ae':eval_medae}
-    
 
     # re-rank and sort filtered methods by test-score (r**2)
     analysis_set = pd.DataFrame(evaluation_results)
@@ -182,7 +177,6 @@ def main(argv):
     print('Running grid search. Please note this will take a hell of a long time!')
 
     results = rg.auto_grid(X, y, labels, train_percentage, estimators, input_params)
-
 
     proj.save_eval(str(output_file), results)
     analysis_set = quality_filter(results, min_train_score, max_diff)
