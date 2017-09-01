@@ -4,10 +4,15 @@
 import sys, os
 sys.path.append('/usr/local/lib/python2.7/site-packages')
 sys.path.append('./modules')
+try:
+    from tkinter import *
+    from tkinter import ttk
+    from tkFileDialog import *
+except:
+    from Tkinter import *
+    import ttk
+    from tkFileDialog import *
 
-from tkinter import *
-from tkinter import ttk
-from tkFileDialog import *
 import projecthandle as proj
 
 from tkintertable import TableCanvas, TableModel 
