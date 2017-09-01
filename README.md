@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/reskyner/BruteReg.svg)](https://travis-ci.org/reskyner/BruteReg)?branch=master
+[![Build Status](https://travis-ci.org/reskyner/BruteReg.svg)](https://travis-ci.org/reskyner/BruteReg)
 
 # BruteReg - Brute-force Regression (for cheminformatics)
 
