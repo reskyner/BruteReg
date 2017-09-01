@@ -255,6 +255,8 @@ class search_random_forest(object):
                 start = time.time()
                 print('Parameter grid: ' + str(self.parameters))
                 runner = GridSearchCV(self.clf, self.parameters, n_jobs=-1)
+            except (KeyboardInterrupt, SystemExit):
+                raise
             except:
                 print('parralel run failed, trying again...')
                 start = time.time()
@@ -274,6 +276,8 @@ class search_random_forest(object):
             self.ranked = pd.DataFrame(results.cv_results_)
             end = time.time()
             print('Wall clock time: ' + str(end-start))
+        except (KeyboardInterrupt, SystemExit):
+            raise
         except:
             print('Parameter grid: ' + str(self.parameters))
             runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
