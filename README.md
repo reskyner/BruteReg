@@ -91,7 +91,7 @@ Your own input files should follow the same format. A reference to the structure
 I will add a script to calculate rdkit descriptors from SMILES strings in the future. I will also aim to add a number of scripts to scrape databases (e.g. ChEMBL) for experimental properties information, although this is currently not implemented.
 
 ## Additional scripts ##
-1. A script to calculate rdkit descriptors for an input csv file, with the column headings Refcode and Smiles, containing the smiles strings for the compounds (identified by a refcode - which can be anything) you wish to work with. This script is located in ./calculate descriptors. 
+1. A script to calculate rdkit descriptors for an input csv file, with the column headings Refcode and Smiles, containing the smiles strings for the compounds (identified by a refcode - which can be anything) you wish to work with. This script is located in ./calculate_descriptors. 
 
    To run:
 
