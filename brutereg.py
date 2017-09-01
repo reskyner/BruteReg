@@ -5,10 +5,11 @@ from sklearn import metrics
 import pandas as pd
 import numpy as np
 
+sys.path.append('./modules')
+
 import projecthandle as proj
 import run_grid as rg
 
-sys.path.append('./modules')
 
 ## suppress all warnings - will stop stupid convergence thing - consider revising
 # todo: figure out which models auto throw warning (e.g. alpha=0 warning)

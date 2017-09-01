@@ -113,6 +113,5 @@ method = 12
 'C': np.arange(0.1, 1, 0.05),
 'loss': ['epsilon_insensitive', 'squared_epsilon_insensitive'],
 'epsilon': np.arange(0, 1.1, 0.1),
-'dual': [True, False],
 'fit_intercept': [True, False]
 }
