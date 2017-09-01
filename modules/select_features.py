@@ -1,9 +1,3 @@
-#!/usr/bin/python
-# coding=utf8
-
-#import sys
-#sys.path.append('/usr/local/lib/python2.7/site-packages')
-
 import pandas as pd
 from sklearn import feature_selection
 from sklearn.ensemble import ExtraTreesRegressor
@@ -22,9 +16,9 @@ def select_featurez(X_train, Y_train, no_k, descriptor_matrix_train, descriptor_
         if a==0:
             X_fr_train=pd.DataFrame(descriptor_matrix_train.iloc[:,indicies_fr[a]])
             X_fr_test=pd.DataFrame(descriptor_matrix_test.iloc[:,indicies_fr[a]])
-	if a>0:
+    if a>0:
             X_fr_train=pd.concat([X_fr_train,pd.DataFrame(descriptor_matrix_train.iloc[:,indicies_fr[a]])],axis=1)
-	    X_fr_test=pd.concat([X_fr_test,pd.DataFrame(descriptor_matrix_test.iloc[:,indicies_fr[a]])],axis=1)
+    X_fr_test=pd.concat([X_fr_test,pd.DataFrame(descriptor_matrix_test.iloc[:,indicies_fr[a]])],axis=1)
 
     values_fr = list(X_fr_train.columns.values)
     X_fr_train = np.array(X_fr_train)
@@ -40,9 +34,9 @@ def select_featurez(X_train, Y_train, no_k, descriptor_matrix_train, descriptor_
         if b==0:
             X_MIR_train=pd.DataFrame(descriptor_matrix_train.iloc[:,indicies_MIR[b]])
             X_MIR_test=pd.DataFrame(descriptor_matrix_test.iloc[:,indicies_MIR[b]])
-	if b>0:
+    if b>0:
             X_MIR_train=pd.concat([X_MIR_train,pd.DataFrame(descriptor_matrix_train.iloc[:,indicies_MIR[b]])],axis=1)
-	    X_MIR_test=pd.concat([X_MIR_test,pd.DataFrame(descriptor_matrix_test.iloc[:,indicies_MIR[b]])],axis=1)
+    X_MIR_test=pd.concat([X_MIR_test,pd.DataFrame(descriptor_matrix_test.iloc[:,indicies_MIR[b]])],axis=1)
 
     values_MIR = list(X_MIR_train.columns.values)
     X_MIR_train = np.array(X_MIR_train)
@@ -65,8 +59,8 @@ def select_featurez(X_train, Y_train, no_k, descriptor_matrix_train, descriptor_
         if c==0:
             X_forest_train=pd.DataFrame(descriptor_matrix_train.iloc[:,indicies_forest[c]])
             X_forest_test=pd.DataFrame(descriptor_matrix_test.iloc[:,indicies_forest[c]])
-	if c>0:
-            X_forest_train=pd.concat([X_forest_train,pd.DataFrame(descriptor_matrix_train.iloc[:,indicies_forest[c]])],axis=1)
+    if c>0:
+        X_forest_train=pd.concat([X_forest_train,pd.DataFrame(descriptor_matrix_train.iloc[:,indicies_forest[c]])],axis=1)
 	    X_forest_test=pd.concat([X_forest_test,pd.DataFrame(descriptor_matrix_test.iloc[:,indicies_forest[c]])],axis=1)
 
     values_forest = list(X_forest_train.columns.values)

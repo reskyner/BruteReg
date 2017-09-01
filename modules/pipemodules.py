@@ -1,7 +1,5 @@
 import time
-import sys
 import re
-#sys.path.append('/usr/local/lib/python2.7/site-packages')
 
 import pandas as pd
 from sklearn import feature_selection
