@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/reskyner/BruteReg.svg)](https://travis-ci.org/reskyner/BruteReg)
+<a href="https://codeclimate.com/github/reskyner/BruteReg"><img src="https://codeclimate.com/github/reskyner/BruteReg/badges/gpa.svg" /></a>
+<a href="https://codeclimate.com/github/reskyner/BruteReg/"><img src="https://codeclimate.com/github/reskyner/BruteReg/badges/issue_count.svg" /></a>
 
 # BruteReg - Brute-force Regression (for cheminformatics)
 
