@@ -87,18 +87,18 @@ def quality_filter(all_data, min_train_score, max_diff):
         ## take method_ids and build estimator for current method
 
         # add calculated metrics, methods, and parameters to lists for results
-        dev_set_score.append(clf.score(X_dev_temp, all_data.dev_set.y_raw))
-        eval_set_score.append(clf.score(X_eval_temp, all_data.eval_set.y_raw))
-        dev_evs.append(metrics.explained_variance_score(dev_predict, all_data.dev_set.y_raw))
-        eval_evs.append(metrics.explained_variance_score(eval_predict, all_data.eval_set.y_raw))
-        dev_mae.append(metrics.mean_absolute_error(dev_predict, all_data.dev_set.y_raw))
-        eval_mae.append(metrics.mean_absolute_error(eval_predict, all_data.eval_set.y_raw))
-        dev_mse.append(metrics.mean_squared_error(dev_predict, all_data.dev_set.y_raw))
-        eval_mse.append(metrics.mean_squared_error(eval_predict, all_data.eval_set.y_raw))
-        dev_medae.append(metrics.median_absolute_error(dev_predict, all_data.dev_set.y_raw))
-        eval_medae.append(metrics.median_absolute_error(eval_predict, all_data.eval_set.y_raw))
-        method_ids.append(string)
-        parameters.append(params)
+        dev_set_score.append(all_data.clf.score(all_data.X_dev_temp, all_data.dev_set.y_raw))
+        eval_set_score.append(all_data.clf.score(all_data.X_eval_temp, all_data.eval_set.y_raw))
+        dev_evs.append(metrics.explained_variance_score(all_data.dev_predict, all_data.dev_set.y_raw))
+        eval_evs.append(metrics.explained_variance_score(all_data.eval_predict, all_data.eval_set.y_raw))
+        dev_mae.append(metrics.mean_absolute_error(all_data.dev_predict, all_data.dev_set.y_raw))
+        eval_mae.append(metrics.mean_absolute_error(all_data.eval_predict, all_data.eval_set.y_raw))
+        dev_mse.append(metrics.mean_squared_error(all_data.dev_predict, all_data.dev_set.y_raw))
+        eval_mse.append(metrics.mean_squared_error(all_data.eval_predict, all_data.eval_set.y_raw))
+        dev_medae.append(metrics.median_absolute_error(all_data.dev_predict, all_data.dev_set.y_raw))
+        eval_medae.append(metrics.median_absolute_error(all_data.eval_predict, all_data.eval_set.y_raw))
+        method_ids.append(all_data.string)
+        parameters.append(all_data.params)
 
     # create dictionary object from results
     evaluation_results = {'dev_set_score':dev_set_score, 'eval_set_score':eval_set_score,
