@@ -32,7 +32,12 @@ signal.signal(signal.SIGALRM, timeout_handler)
 class preprocess(object):
 
     def __init__(self):
-        None
+        self.X_train = []
+        self.X_test = []
+        self.Y_train = []
+        self.Y_test = []
+        self.descriptor_matrix_train = []
+        self.descriptor_matrix_test = []
 
     def data_split(self, X, y, labels, train_percentage):
         ## list the names of descriptors, and separate descriptors (X) and logS (y)
@@ -65,18 +70,6 @@ class preprocess(object):
 
         append_data(X_train, Y_train, X2, y2, train_ind, refs_train, labels)
         append_data(X_test, Y_test, X2, y2, test_ind, refs_test, labels)
-
-        # for i in range(0,len(train_ind)):
-        #     j = train_ind[i]
-        #     X_train.append(X2[j,:])
-        #     Y_train.append(y2[j])
-        #     refs_train.append(labels[j]) # refcodes for the training structures
-        #
-        # for i in range(0,len(test_ind)):
-        #     j = test_ind[i]
-        #     X_test.append(X2[j,:])
-        #     Y_test.append(y2[j])
-        #     refs_test.append(labels[j]) # refcodes for the testing structures
             
         descriptor_matrix_train = pd.DataFrame()
         descriptor_matrix_test = pd.DataFrame()
@@ -118,8 +111,6 @@ class feature_selector(object):
                                           random_state=0)
             forest.fit(data.X_train, data.Y_train)
             importances = forest.feature_importances_
-            std = np.std([tree.feature_importances_ for tree in forest.estimators_],
-                         axis=0)
             indicies_forest = np.argsort(importances)[::-1]
             indicies_forest = indicies_forest[:no_k]
             
