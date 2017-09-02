@@ -1,41 +1,12 @@
-import sys
+import sys, re
 sys.path.append('./modules')
 
 import pipemodules as pm
 import numpy as np
-import re
 import pandas as pd
 
-def auto_grid(X, y, labels, train_percentage, opts, input_params, ks=range(5,100,5)):
-    """Run a grid search... auto_grid(X, y, labels, ks=range(10,100,10) opts=[1...12])
--------------------------------------------------------------------------------
-Required: X - matrix of descriptors
-	      y - response values
-	      labels - labels for structures
-Optional: ks - array of k-values (number of features to be selected
-	      opts - array of option numbers where:
 
-        	    1: Random forest
-            	2: Extra random trees
-            	3: Simple OLS linear regression
-            	4: Ridge regression
-            	5: Ridge regression with cross validation (CV)
-            		--** WARNING: Currently not working **--
-            	6: Lasso (Least Absolute Shrinkage Selection Operator) regression
-            	7: Lasso with CV
-            	8: Lasso with least angle regression (lars) & CV
-            	9: Lasso lars with information criterion (IC) - AIC/BIC
-             	10: Elastic net regression
-            	11: Elastic net with CV
-            	12: Linear support vector regression
-            	
-Development: Currently only a default set of hyper-parameters are enabled...
-
-                To change these, edit them in the set_parameters() function in
-                pipemodules.py.
-
-                We reccomend you create a backup of the original file!"""
-
+def auto_grid(X, y, labels, train_percentage, opts, input_params, sig_time, ks=range(5,100,5)):
     ## Preprocess data
     print('Running preprocessing step...')
     all_data = pm.preprocess()
@@ -67,15 +38,13 @@ Development: Currently only a default set of hyper-parameters are enabled...
 
                 try:
                     method_id = str([j,k,i])
-                    # print('Setting up model with index: ' + method_id)
                     grid_search = pm.search_random_forest()
                     grid_search.set_method(i)
 
                     grid_search.read_method_paramgrid(input_params, i)
 
                     # run current method
-                    # print('Running grid search for current method...')
-                    temp_results = grid_search.run(X_temp, all_data.Y_train, method_id)
+                    temp_results = grid_search.run(X_temp, all_data.Y_train, method_id, sig_time)
 
                     # add results to table
                     try:
@@ -83,7 +52,7 @@ Development: Currently only a default set of hyper-parameters are enabled...
                         all_data.results = pd.concat([all_data.results, pd.DataFrame(temp_results)])
                         print('Done with current method... woohoo!\n\n')
                     except (KeyboardInterrupt, SystemExit):
-                        raise
+                       raise
                     except:
                         all_data.results = []
                         all_data.results = pd.DataFrame(temp_results)
@@ -120,4 +89,3 @@ Development: Currently only a default set of hyper-parameters are enabled...
     all_data.results.reset_index(drop=True, inplace=True)
 
     return all_data
-

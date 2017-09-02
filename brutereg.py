@@ -129,9 +129,10 @@ def main(argv):
     train_percentage = 50
     estimators = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     input_params = './parameter_files/default_hyperparameter_grids'
+    sig_time = 600
     try:
-        opts, args = getopt.getopt(argv,"hi:o:m:d:p:e:u:",["help", "input", "output", "min_train_score", "max_diff",
-                                                    "train_percentage", "estimators", "hyperparameters"])
+        opts, args = getopt.getopt(argv,"hi:o:m:d:p:e:u:t:",["help", "input", "output", "min_train_score", "max_diff",
+                                                    "train_percentage", "estimators", "hyperparameters", "timeout"])
 
     except getopt.GetoptError:
         print USAGE
@@ -155,6 +156,8 @@ def main(argv):
             estimators = eval(arg)
         elif opt in ("-u", "--hyperparameters"):
             input_params = arg
+        elif opt in ("-t", "--timeout"):
+            sig_time = int(arg)
 
 
     if len(input_file) < 1 :
@@ -177,7 +180,7 @@ def main(argv):
     X,y,labels = proj.set_input(str(input_file))
     print('Running grid search. Please note this will take a hell of a long time!')
 
-    results = rg.auto_grid(X, y, labels, train_percentage, estimators, input_params)
+    results = rg.auto_grid(X, y, labels, train_percentage, estimators, input_params, sig_time)
 
     proj.save_eval(str(output_file), results)
     analysis_set = quality_filter(results, min_train_score, max_diff)

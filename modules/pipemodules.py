@@ -1,5 +1,6 @@
 import time
 import re
+import signal
 
 import pandas as pd
 from sklearn import feature_selection
@@ -13,6 +14,20 @@ from sklearn import ensemble
 from sklearn import svm
 
 import random
+
+
+class TimeoutException(Exception):  # Custom exception class
+    pass
+
+
+def timeout_handler(signum, frame):  # Custom signal handler
+    print('Maximum time for single method reached. To override, use the -t flag (specify in sec)')
+    print('Continuing with next method...\n')
+    raise TimeoutException
+
+# Change the behavior of SIGALRM
+signal.signal(signal.SIGALRM, timeout_handler)
+
 
 class preprocess(object):
 
@@ -76,7 +91,6 @@ class feature_selector(object):
         None
 
     def run(self, data, k_vals):
-
         selection_labels = []
         indvalues = []
 
@@ -114,6 +128,7 @@ class feature_selector(object):
 
         return selection_labels, indvalues
 
+
 class search_random_forest(object):
 
     def __init__(self):
@@ -122,7 +137,6 @@ class search_random_forest(object):
         self.method_no = ''
         self.clf = ''
         self.parameters = ''
-        
 
     def set_method(self, method):
         """ set_method(method) method = 1: RandomForestRegressor, 2: ExtraTreesRegressor"""
@@ -242,60 +256,72 @@ class search_random_forest(object):
         self.parameters = final_grid
         return self.parameters
 
+    def run(self, X, y, meth_id, sig_time):
+        try:
+            signal.alarm(sig_time)
 
-    def run(self, X, y, meth_id):
+            print 'Running a grid search (CV) with ' + str(self.method_str) + str('(' + str(meth_id) + ')') + '...'
+            meth_id = eval(meth_id)
 
-        print 'Running a grid search (CV) with ' + str(self.method_str) + str('(' + str(meth_id) + ')') + '...'
-        meth_id = eval(meth_id)
-
-        if meth_id[2] in [1,2,4,5,7,8,10,11]:
-            try:
-                start = time.time()
-                print('Parameter grid: ' + str(self.parameters))
-                runner = GridSearchCV(self.clf, self.parameters, n_jobs=-1)
-            except (KeyboardInterrupt, SystemExit):
-                raise
-            except:
-                print('parralel run failed, trying again...')
+            if meth_id[2] in [1,2,4,5,7,8,10,11]:
+                try:
+                    start = time.time()
+                    print('Parameter grid: ' + str(self.parameters))
+                    runner = GridSearchCV(self.clf, self.parameters, n_jobs=-1)
+                except (KeyboardInterrupt, SystemExit):
+                    raise
+                except:
+                    signal.alarm(0)
+                    signal.signal(signal.SIGALRM, OriginalHandler)
+                    signal.alarm(sig_time)
+                    print('parralel run failed, trying again...')
+                    start = time.time()
+                    print('Parameter grid: ' + str(self.parameters))
+                    runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
+            else:
                 start = time.time()
                 print('Parameter grid: ' + str(self.parameters))
                 runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
-        else:
-            start = time.time()
-            print('Parameter grid: ' + str(self.parameters))
-            runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
-        try:
-            results = runner.fit(X,y)
-            ids = []
-            for i in range(0, len(results.cv_results_['rank_test_score'])):
-                ids.append(str(meth_id))
+            try:
+                results = runner.fit(X,y)
+                ids = []
+                for i in range(0, len(results.cv_results_['rank_test_score'])):
+                    ids.append(str(meth_id))
 
-            results.cv_results_['method_ids']=ids
-            self.ranked = pd.DataFrame(results.cv_results_)
-            end = time.time()
-            print('Wall clock time: ' + str(end-start))
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except:
-            print('Parameter grid: ' + str(self.parameters))
-            runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
-            results = runner.fit(X, y)
-            ids = []
-            for i in range(0, len(results.cv_results_['rank_test_score'])):
-                ids.append(str(meth_id))
+                results.cv_results_['method_ids']=ids
+                self.ranked = pd.DataFrame(results.cv_results_)
+                end = time.time()
+                print('Wall clock time: ' + str(end-start))
+            except (KeyboardInterrupt, SystemExit):
+                raise
+            except:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, OriginalHandler)
+                signal.alarm(sig_time)
+                print('Parameter grid: ' + str(self.parameters))
+                runner = GridSearchCV(self.clf, self.parameters, n_jobs=1, pre_dispatch=False)
+                results = runner.fit(X, y)
+                ids = []
+                for i in range(0, len(results.cv_results_['rank_test_score'])):
+                    ids.append(str(meth_id))
 
-            results.cv_results_['method_ids'] = ids
-            self.ranked = pd.DataFrame(results.cv_results_)
-            end = time.time()
-            print('Wall clock time: ' + str(end - start))
+                results.cv_results_['method_ids'] = ids
+                self.ranked = pd.DataFrame(results.cv_results_)
+                end = time.time()
+                print('Wall clock time: ' + str(end - start))
+
+        except TimeoutException:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, OriginalHandler)
+            pass
 
         return self.ranked
 
     def get_results(self):
-
-        self.printout = pd.DataFrame(self.ranked)
+        printout = pd.DataFrame(self.ranked)
         
-        return self.printout
+        return printout
+
 
 def get_X(X, indicies):
     state = 0
