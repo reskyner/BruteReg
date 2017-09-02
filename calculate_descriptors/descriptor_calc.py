@@ -23,6 +23,7 @@ USAGE:
 
 """
 
+
 def main(argv):
     input_file = ''
     output_file = ''
@@ -31,12 +32,11 @@ def main(argv):
         opts, args = getopt.getopt(argv,"hi:o:",["help", "input", "output"])
 
     except getopt.GetoptError:
-        print USAGE
-        raise
+        print(USAGE)
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print USAGE
+            print(USAGE)
             sys.exit()
         elif opt in ("-i", "--input"):
             input_file = arg
@@ -45,10 +45,9 @@ def main(argv):
 
     test = pd.read_csv(input_file)
 
-    temp=[]
     temp2 = [' ' for i in range(0, len(test))]
 
-    nms=[x[0] for x in Descriptors._descList]
+    nms = [x[0] for x in Descriptors._descList]
     calc = MoleculeDescriptors.MolecularDescriptorCalculator(nms)
 
     for i in range(0, len(nms)):
