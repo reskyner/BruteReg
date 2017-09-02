@@ -261,7 +261,7 @@ class search_random_forest(object):
         try:
             signal.alarm(sig_time)
 
-            print 'Running a grid search (CV) with ' + str(self.method_str) + str('(' + str(meth_id) + ')') + '...'
+            print('Running a grid search (CV) with ' + str(self.method_str) + str('(' + str(meth_id) + ')') + '...')
             meth_id = eval(meth_id)
 
             if meth_id[2] in [1,2,4,5,7,8,10,11]:

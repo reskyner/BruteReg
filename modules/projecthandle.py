@@ -30,7 +30,7 @@ class file_loader(object):
     def load_file(self, filename):
         try:
             load_number = check_contents(filename)
-            print load_number
+            print(load_number)
 
             def eval_load():
                 # import evaluation set
@@ -67,7 +67,7 @@ class project(object):
                 pickle.dump(data_object, pickle_place)
                 pickle.dump(data_object2, pickle_place)
                 pickle.dump(method_object, pickle_place)
-                print 'saving...'
+                print('saving...')
 
         save()
 

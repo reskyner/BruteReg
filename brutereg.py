@@ -9,7 +9,6 @@ sys.path.append('./modules')
 
 import projecthandle as proj
 import run_grid as rg
-import pipemodules as pm
 
 
 ## suppress all warnings - will stop stupid convergence thing - consider revising
@@ -87,12 +86,11 @@ def main(argv):
                                                     "train_percentage", "estimators", "hyperparameters", "timeout"])
 
     except getopt.GetoptError:
-        print USAGE
-        raise
+        print(USAGE)
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print USAGE
+            print(USAGE)
             sys.exit()
         elif opt in ("-i", "--input"):
             input_file = arg
