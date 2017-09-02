@@ -9,6 +9,7 @@ sys.path.append('./modules')
 
 import projecthandle as proj
 import run_grid as rg
+import pipemodules as pm
 
 
 ## suppress all warnings - will stop stupid convergence thing - consider revising
@@ -68,56 +69,7 @@ def quality_filter(all_data, min_train_score, max_diff):
 
     results.reset_index(drop=True, inplace=True)
 
-    ## create analysis set
-    # set arrays for results
-    dev_set_score = []
-    eval_set_score = []
-    dev_evs = []
-    eval_evs = []
-    dev_mae = []
-    eval_mae = []
-    dev_mse = []
-    eval_mse = []
-    dev_medae = []
-    eval_medae = []
-    method_ids = []
-    parameters = []
-
-    for i in range(0,len(results)):
-        ## take method_ids and build estimator for current method
-
-        # add calculated metrics, methods, and parameters to lists for results
-        dev_set_score.append(all_data.clf.score(all_data.X_dev_temp, all_data.dev_set.y_raw))
-        eval_set_score.append(all_data.clf.score(all_data.X_eval_temp, all_data.eval_set.y_raw))
-        dev_evs.append(metrics.explained_variance_score(all_data.dev_predict, all_data.dev_set.y_raw))
-        eval_evs.append(metrics.explained_variance_score(all_data.eval_predict, all_data.eval_set.y_raw))
-        dev_mae.append(metrics.mean_absolute_error(all_data.dev_predict, all_data.dev_set.y_raw))
-        eval_mae.append(metrics.mean_absolute_error(all_data.eval_predict, all_data.eval_set.y_raw))
-        dev_mse.append(metrics.mean_squared_error(all_data.dev_predict, all_data.dev_set.y_raw))
-        eval_mse.append(metrics.mean_squared_error(all_data.eval_predict, all_data.eval_set.y_raw))
-        dev_medae.append(metrics.median_absolute_error(all_data.dev_predict, all_data.dev_set.y_raw))
-        eval_medae.append(metrics.median_absolute_error(all_data.eval_predict, all_data.eval_set.y_raw))
-        method_ids.append(all_data.string)
-        parameters.append(all_data.params)
-
-    # create dictionary object from results
-    evaluation_results = {'dev_set_score':dev_set_score, 'eval_set_score':eval_set_score,
-                          'method_ids':method_ids, 'parameters':parameters, 'dev_evs':dev_evs,
-                          'eval_evs':eval_evs, 'dev_mae':dev_mae, 'eval_mae':eval_mae,
-                          'dev_mse': dev_mse, 'eval_mse':eval_mse, 'dev_median_ae':dev_medae,
-                          'eval_median_ae':eval_medae}
-
-    # re-rank and sort filtered methods by test-score (r**2)
-    analysis_set = pd.DataFrame(evaluation_results)
-    array = np.array(analysis_set['eval_set_score'])
-    temp = array.argsort()[::-1]
-    ranks = np.empty(len(array), int)
-    ranks[temp] = np.arange(len(array))
-    analysis_set['rank_test_score'] = ranks
-    analysis_set.sort_values(by='rank_test_score', inplace=True)
-    analysis_set.reset_index(drop=True, inplace=True)
-    
-    return analysis_set
+    return results
 
 
 def main(argv):

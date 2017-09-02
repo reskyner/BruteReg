@@ -56,17 +56,27 @@ class preprocess(object):
         refs_test=[]
 
         ## Create the training and testing sets
-        for i in range(0,len(train_ind)):
-            j = train_ind[i]
-            X_train.append(X2[j,:])
-            Y_train.append(y2[j])
-            refs_train.append(labels[j]) # refcodes for the training structures
+        def append_data(X_array, Y_array, X, Y, index, references, label):
+            for i in range(0,len(index)):
+                j = index[i]
+                X_array.append(X[j,:])
+                Y_array.append(Y[j])
+                references.append(label[j])
 
-        for i in range(0,len(test_ind)):
-            j = test_ind[i]
-            X_test.append(X2[j,:])
-            Y_test.append(y2[j])
-            refs_test.append(labels[j]) # refcodes for the testing structures
+        append_data(X_train, Y_train, X2, y2, train_ind, refs_train, labels)
+        append_data(X_test, Y_test, X2, y2, test_ind, refs_test, labels)
+
+        # for i in range(0,len(train_ind)):
+        #     j = train_ind[i]
+        #     X_train.append(X2[j,:])
+        #     Y_train.append(y2[j])
+        #     refs_train.append(labels[j]) # refcodes for the training structures
+        #
+        # for i in range(0,len(test_ind)):
+        #     j = test_ind[i]
+        #     X_test.append(X2[j,:])
+        #     Y_test.append(y2[j])
+        #     refs_test.append(labels[j]) # refcodes for the testing structures
             
         descriptor_matrix_train = pd.DataFrame()
         descriptor_matrix_test = pd.DataFrame()
