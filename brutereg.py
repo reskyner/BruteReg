@@ -118,7 +118,7 @@ def main(argv):
         print('ERROR: Must specify an output file!')
         sys.exit()
 
-    print USAGE
+    print(USAGE)
     print('The following estimator options were selected: ' + str(estimators) + '\n')
 
     print('**********************************************************************************\n')
